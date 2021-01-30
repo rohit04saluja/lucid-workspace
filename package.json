@@ -3,6 +3,17 @@
   "displayName": "Workspaces",
   "description": "Extension to manage large workspaces",
   "version": "0.0.1",
+  "homepage": "https://github.com/rohit04saluja/workspaces",
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/rohit04saluja/workspaces"
+  },
+  "bugs": {
+      "url": "https://github.com/rohit04saluja/workspaces/issues"
+  },
+  "author": "rohit04saluja",
+  "publisher": "rohit04saluja",
+  "icon": "_static/icon.png",
   "engines": {
     "vscode": "^1.52.0"
   },
