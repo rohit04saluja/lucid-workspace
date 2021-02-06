@@ -9,7 +9,8 @@ export function activate(context: vscode.ExtensionContext) {
     log.info("Workspaces is activated");
 
     /** Set to context that workspaces is activated */
-    vscode.commands.executeCommand('setContext', 'workspaces:state', 'activate');
+    vscode.commands.executeCommand('setContext', 'workspaces:state',
+        'activate');
 
     /** Initialize the commands */
     initCommands();
@@ -27,7 +28,8 @@ export function deactivate() {}
  */
 export function enable(wsFolders:vscode.WorkspaceFolder[]) {
     const log:Logger = getLogger();
-    log.info(`Workspaces is enabling now with workspace folders 
-        ${wsFolders.map(e => e.uri).join(', ')}`);
+    log.info(`Workspaces is enabling now with workspace folders ${wsFolders
+        .map(e => e.uri).join(', ')
+    }`);
     vscode.commands.executeCommand('setContext', 'workspaces:state', 'enable');
 }

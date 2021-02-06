@@ -20,7 +20,8 @@ export function initCommands () {
                 log.info('There are no folders in this workspace')
                 const opts = ['Add Folder', 'Ok'];
                 vscode.window.showErrorMessage(`Workspaces can not be enabled.
-                    There are no folders added to Workspace. Please add folder(s) to workspace and try again.`,
+                    There are no folders added to Workspace. Please add
+                    folder(s) to workspace and try again.`,
                     ...opts).then((value:string | undefined) => {
 
                     switch(value) {
