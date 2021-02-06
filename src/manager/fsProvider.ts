@@ -19,7 +19,9 @@ import { getLogger, Logger } from '../logger';
 function getChildren(path:string, all:boolean=false):string[] {
     if (lstatSync(path).isDirectory()) {
         return readdirSync(path, { withFileTypes: true })
-            .filter(e => all?true:!e.name.startsWith('.')).map(e => e.name);
+            .filter(e => e.isDirectory() 
+                && (all ? true: !e.name.startsWith('.'))
+            ).map(e => e.name);
     } else {
         return [];
     }
@@ -29,12 +31,12 @@ function getChildren(path:string, all:boolean=false):string[] {
  * Class for allFoldersProvider
  */
 export class FsProvider 
-    implements vscode.TreeDataProvider<FsTreeItem> {
+    implements vscode.TreeDataProvider<FolderTreeItem> {
 
     private _onDidChangeTreeData
-        :vscode.EventEmitter<FsTreeItem | undefined> =
-        new vscode.EventEmitter<FsTreeItem | undefined>();
-    readonly onDidChangeTreeData:vscode.Event<FsTreeItem | undefined> =
+        :vscode.EventEmitter<FolderTreeItem | undefined> =
+        new vscode.EventEmitter<FolderTreeItem | undefined>();
+    readonly onDidChangeTreeData:vscode.Event<FolderTreeItem | undefined> =
         this._onDidChangeTreeData.event;
 
     private logger:Logger = getLogger();
@@ -42,19 +44,21 @@ export class FsProvider
 
     constructor(wsFolders:vscode.WorkspaceFolder[]) {
         this.logger.info('Initializing all folders tree provider');
-        this.root = wsFolders.map(e => new FolderTreeItem(e));
+        this.root = wsFolders.map(e => new FolderTreeItem(
+            e.name, e.uri.fsPath
+        ));
     }
 
-    getTreeItem(element:FsTreeItem): vscode.TreeItem {
+    getTreeItem(element:FolderTreeItem): vscode.TreeItem {
         return element;
     }
 
-    async getChildren(element?:FsTreeItem):Promise<FsTreeItem[]> {
-        let items:FsTreeItem[] = [];
+    async getChildren(element?:FolderTreeItem):Promise<FolderTreeItem[]> {
+        let items:FolderTreeItem[] = [];
         if (element) {
             if (element instanceof FolderTreeItem) {
                 items = getChildren(element.path)
-                    .map(e => new FsTreeItem(
+                    .map(e => new FolderTreeItem(
                         e, join(element.path, e)
                     ));
             }
@@ -65,13 +69,14 @@ export class FsProvider
     }
 }
 
-abstract class FsTreeItemAbstract extends vscode.TreeItem {
+abstract class FolderTreeItemAbstract extends vscode.TreeItem {
     abstract collapsibleState: vscode.TreeItemCollapsibleState;
 }
 
-class FsTreeItem extends FsTreeItemAbstract {
+class FolderTreeItem extends FolderTreeItemAbstract {
     private _collapseibleState:vscode.TreeItemCollapsibleState | undefined =
-    undefined;
+        undefined;
+    public iconPath = new vscode.ThemeIcon('folder');
 
     constructor(label:string, public path:string) {
         super(label);
@@ -93,13 +98,5 @@ class FsTreeItem extends FsTreeItemAbstract {
 
     set collapsibleState(state:vscode.TreeItemCollapsibleState) {
         this._collapseibleState = state;
-    }
-}
-
-class FolderTreeItem extends FsTreeItem {
-    public iconPath = new vscode.ThemeIcon('folder-opened');
-
-    constructor(wsFolder:vscode.WorkspaceFolder) {
-        super(wsFolder.name, wsFolder.uri.fsPath);
     }
 }
