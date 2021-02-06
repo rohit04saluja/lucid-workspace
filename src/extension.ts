@@ -33,3 +33,16 @@ export function enable(wsFolders:vscode.WorkspaceFolder[]) {
     }`);
     vscode.commands.executeCommand('setContext', 'workspaces:state', 'enable');
 }
+
+/**
+ * @brief
+ * disable
+ *
+ * @description
+ * disable the extension and tear down
+ */
+export function disable() {
+    const log:Logger = getLogger();
+    log.info(`Workspaces is disabling now`);
+    vscode.commands.executeCommand('setContext', 'workspaces:state', 'disable');
+}

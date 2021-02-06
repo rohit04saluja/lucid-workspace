@@ -28,8 +28,13 @@
     "commands": [
       {
         "command": "workspaces.enable",
-        "enablement": "workspaces:state == activate",
+        "enablement": "workspaces:state == activate || workspaces:state == disable",
         "title": "Enable Workspaces"
+      },
+      {
+        "command": "workspaces.disable",
+        "enablement": "workspaces:state == enable",
+        "title": "Disable Workspaces"
       }
     ]
   },

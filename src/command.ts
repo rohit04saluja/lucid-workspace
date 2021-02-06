@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { enable } from "./extension";
+import { disable, enable } from "./extension";
 import { getLogger, Logger } from "./logger";
 
 /**
@@ -67,4 +67,9 @@ export function initCommands () {
             enable(folders);
         }
     });
+
+    /** Register disable command */
+    vscode.commands.registerCommand('workspaces.disable', () => {
+        disable();
+    })
 }
