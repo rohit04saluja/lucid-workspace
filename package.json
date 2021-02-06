@@ -36,7 +36,15 @@
         "enablement": "workspaces:state == enable",
         "title": "Disable Workspaces"
       }
-    ]
+    ],
+    "viewsContainers": {
+        "workspaces": [
+            {
+                "id": "all-folders",
+                "name": "All Folders"
+            }
+        ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
