@@ -18,15 +18,22 @@ export function initCommands () {
                 || vscode.workspace.workspaceFolders.length == 0) {
 
                 log.info('There are no folders in this workspace')
-                const opts = ['Add folder', 'Ok'];
+                const opts = ['Add Folder', 'Try Again', 'Ok'];
                 vscode.window.showErrorMessage(`Workspaces can not be enabled.
-                    There are no folders added to Workspace.`,
+                    There are no folders added to Workspace. Please add folder(s) to workspace and try again.`,
                     ...opts).then((value:string | undefined) => {
 
                     switch(value) {
                         /** Execute command to add workspaceFolders */
                         case opts[0]:
+                            vscode.commands.executeCommand(
+                                'workbench.action.addRootFolder'
+                            );
                             break;
+                        case opts[1]:
+                            vscode.commands.executeCommand(
+                                'workspaces.enable'
+                            );
                         default:
                             break;
                     }
