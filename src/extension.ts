@@ -1,6 +1,9 @@
 import * as vscode from 'vscode';
 import { initCommands } from './command';
 import { Logger, getLogger } from './logger';
+import { FolderManager } from './manager/manager';
+
+let folderManager:FolderManager;
 
 /** this method is called when your extension is activated */
 export function activate(context: vscode.ExtensionContext) {
@@ -31,6 +34,18 @@ export function enable(wsFolders:vscode.WorkspaceFolder[]) {
     log.info(`Workspaces is enabling now with workspace folders ${wsFolders
         .map(e => e.uri).join(', ')
     }`);
+
+        vscode.window.withProgress({
+            location: vscode.ProgressLocation.Notification,
+            title: "Setting up Workspaces to manage your workspace folders"
+        }, () => {
+            return new Promise<void>(resolve => {
+                folderManager = new FolderManager(wsFolders);
+                resolve();
+            });
+        });
+
+    /** Enabling was successful */
     vscode.commands.executeCommand('setContext', 'workspaces:state', 'enable');
 }
 
