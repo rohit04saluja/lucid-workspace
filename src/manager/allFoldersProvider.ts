@@ -1,4 +1,4 @@
-import { read, readdirSync } from 'fs';
+import { lstatSync, readdirSync } from 'fs';
 import { join } from 'path';
 import * as vscode from 'vscode';
 import { getLogger, Logger } from '../logger';
@@ -16,9 +16,13 @@ import { getLogger, Logger } from '../logger';
  * @return
  * A list of all directories inside the given path
  */
-function getDirs(path:string):string[] {
-    return readdirSync(path, { withFileTypes: true })
-        .filter(e => e.isDirectory()).map(e => e.name);
+function getChildren(path:string, all:boolean=false):string[] {
+    if (lstatSync(path).isDirectory()) {
+        return readdirSync(path, { withFileTypes: true })
+            .filter(e => all?true:!e.name.startsWith('.')).map(e => e.name);
+    } else {
+        return [];
+    }
 }
 
 /**
@@ -49,8 +53,8 @@ export class AllFoldersProvider
         let items:AllFolderTreeItem[] = [];
         if (element) {
             if (element instanceof WsFolderTreeItem) {
-                items = getDirs(element.wsFolder.uri.fsPath)
-                    .map(e => new FolderTreeItem(
+                items = getChildren(element.wsFolder.uri.fsPath)
+                    .map(e => new FsTreeItem(
                         e, join(element.wsFolder.uri.fsPath, e)
                     ));
             }
@@ -75,7 +79,7 @@ class AllFolderTreeItem extends AllFolderTreeItemAbstract {
     }
 
     get collapsibleState():vscode.TreeItemCollapsibleState {
-        let dirs:string[] = getDirs(this.path);
+        let dirs:string[] = getChildren(this.path);
         if (dirs.length > 0) {
             if (this._collapseibleState) {
                 return this._collapseibleState;
@@ -100,7 +104,7 @@ class WsFolderTreeItem extends AllFolderTreeItem {
     }
 }
 
-class FolderTreeItem extends AllFolderTreeItem {
+class FsTreeItem extends AllFolderTreeItem {
     private _collapsibleState:vscode.TreeItemCollapsibleState | undefined =
         undefined;
     constructor(name:string, public path:string) {
