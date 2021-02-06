@@ -53,9 +53,9 @@ export class FsProvider
         let items:FsTreeItem[] = [];
         if (element) {
             if (element instanceof FolderTreeItem) {
-                items = getChildren(element.wsFolder.uri.fsPath)
+                items = getChildren(element.path)
                     .map(e => new FsTreeItem(
-                        e, join(element.wsFolder.uri.fsPath, e)
+                        e, join(element.path, e)
                     ));
             }
         } else {
