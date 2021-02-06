@@ -39,7 +39,7 @@ export function initCommands () {
                 vscode.window.showQuickPick(
                     vscode.workspace.workspaceFolders.map<vscode.QuickPickItem>(e => ({
                         "label": e.name,
-                        "description": dirname(e.uri.fsPath)
+                        "description": e.uri.fsPath
                     })),
                     {
                         "canPickMany": true,
