@@ -38,13 +38,29 @@
       }
     ],
     "viewsContainers": {
-        "workspaces": [
-            {
-                "id": "all-folders",
-                "name": "All Folders"
-            }
-        ]
-    }
+      "activitybar": [
+        {
+          "id": "workspaces",
+          "title": "Workspaces",
+          "icon": "_static/icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "workspaces": [
+        {
+          "id": "all-folders",
+          "name": "All Folders"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "all-folders",
+        "contents": "You need to enable Workspaces to view folders.\n[Enable](command:workspaces.enable)",
+        "enablement": "workspaces:state == activate"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
