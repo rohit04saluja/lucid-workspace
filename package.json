@@ -27,8 +27,9 @@
   "contributes": {
     "commands": [
       {
-        "command": "workspaces.helloWorld",
-        "title": "Hello World"
+        "command": "workspaces.enable",
+        "enablement": "workspaces:state == activate",
+        "title": "Enable Workspaces"
       }
     ]
   },
