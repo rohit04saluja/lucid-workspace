@@ -1,6 +1,25 @@
-import { readdirSync } from 'fs';
+import { read, readdirSync } from 'fs';
+import { join } from 'path';
 import * as vscode from 'vscode';
 import { getLogger, Logger } from '../logger';
+
+/**
+ * @brief
+ * getDirs
+ * 
+ * @description
+ * Get all directories inside the given path
+ * 
+ * @param path
+ * Path to read
+ *
+ * @return
+ * A list of all directories inside the given path
+ */
+function getDirs(path:string):string[] {
+    return readdirSync(path, { withFileTypes: true })
+        .filter(e => e.isDirectory()).map(e => e.name);
+}
 
 /**
  * Class for allFoldersProvider
@@ -29,7 +48,12 @@ export class AllFoldersProvider
     async getChildren(element?:AllFolderTreeItem):Promise<AllFolderTreeItem[]> {
         let items:AllFolderTreeItem[] = [];
         if (element) {
-            items.push(element);
+            if (element instanceof WsFolderTreeItem) {
+                items = getDirs(element.wsFolder.uri.fsPath)
+                    .map(e => new FolderTreeItem(
+                        e, join(element.wsFolder.uri.fsPath, e)
+                    ));
+            }
         } else {
             items = this.root;
         }
@@ -37,25 +61,22 @@ export class AllFoldersProvider
     }
 }
 
-abstract class AllFolderTreeItem extends vscode.TreeItem {
+abstract class AllFolderTreeItemAbstract extends vscode.TreeItem {
     abstract collapsibleState: vscode.TreeItemCollapsibleState;
 }
 
-class WsFolderTreeItem extends AllFolderTreeItem {
-    public iconPath = new vscode.ThemeIcon('folder-opened');
+class AllFolderTreeItem extends AllFolderTreeItemAbstract {
     private _collapseibleState:vscode.TreeItemCollapsibleState | undefined =
-        undefined;
+    undefined;
 
-    constructor(public wsFolder:vscode.WorkspaceFolder) {
-        super(wsFolder.name);
+    constructor(label:string, public path:string) {
+        super(label);
+        this.tooltip = this.path;
     }
 
     get collapsibleState():vscode.TreeItemCollapsibleState {
-        let dirs:string[] = readdirSync(
-            this.wsFolder.uri.fsPath,
-            { withFileTypes: true }
-        ).filter(e => e.isDirectory()).map(e => e.name);
-        if (dirs.length) {
+        let dirs:string[] = getDirs(this.path);
+        if (dirs.length > 0) {
             if (this._collapseibleState) {
                 return this._collapseibleState;
             } else {
@@ -71,4 +92,18 @@ class WsFolderTreeItem extends AllFolderTreeItem {
     }
 }
 
-class FolderTreeItem implements AllFolderTreeItem {}
+class WsFolderTreeItem extends AllFolderTreeItem {
+    public iconPath = new vscode.ThemeIcon('folder-opened');
+
+    constructor(public wsFolder:vscode.WorkspaceFolder) {
+        super(wsFolder.name, wsFolder.uri.fsPath);
+    }
+}
+
+class FolderTreeItem extends AllFolderTreeItem {
+    private _collapsibleState:vscode.TreeItemCollapsibleState | undefined =
+        undefined;
+    constructor(name:string, public path:string) {
+        super(name, path);
+    }
+}
