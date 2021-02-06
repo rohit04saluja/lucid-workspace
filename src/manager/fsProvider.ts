@@ -28,31 +28,31 @@ function getChildren(path:string, all:boolean=false):string[] {
 /**
  * Class for allFoldersProvider
  */
-export class AllFoldersProvider 
-    implements vscode.TreeDataProvider<AllFolderTreeItem> {
+export class FsProvider 
+    implements vscode.TreeDataProvider<FsTreeItem> {
 
     private _onDidChangeTreeData
-        :vscode.EventEmitter<AllFolderTreeItem | undefined> =
-        new vscode.EventEmitter<AllFolderTreeItem | undefined>();
-    readonly onDidChangeTreeData:vscode.Event<AllFolderTreeItem | undefined> =
+        :vscode.EventEmitter<FsTreeItem | undefined> =
+        new vscode.EventEmitter<FsTreeItem | undefined>();
+    readonly onDidChangeTreeData:vscode.Event<FsTreeItem | undefined> =
         this._onDidChangeTreeData.event;
 
     private logger:Logger = getLogger();
-    private root:WsFolderTreeItem[] = [];
+    private root:FolderTreeItem[] = [];
 
     constructor(wsFolders:vscode.WorkspaceFolder[]) {
         this.logger.info('Initializing all folders tree provider');
-        this.root = wsFolders.map(e => new WsFolderTreeItem(e));
+        this.root = wsFolders.map(e => new FolderTreeItem(e));
     }
 
-    getTreeItem(element:AllFolderTreeItem): vscode.TreeItem {
+    getTreeItem(element:FsTreeItem): vscode.TreeItem {
         return element;
     }
 
-    async getChildren(element?:AllFolderTreeItem):Promise<AllFolderTreeItem[]> {
-        let items:AllFolderTreeItem[] = [];
+    async getChildren(element?:FsTreeItem):Promise<FsTreeItem[]> {
+        let items:FsTreeItem[] = [];
         if (element) {
-            if (element instanceof WsFolderTreeItem) {
+            if (element instanceof FolderTreeItem) {
                 items = getChildren(element.wsFolder.uri.fsPath)
                     .map(e => new FsTreeItem(
                         e, join(element.wsFolder.uri.fsPath, e)
@@ -65,11 +65,11 @@ export class AllFoldersProvider
     }
 }
 
-abstract class AllFolderTreeItemAbstract extends vscode.TreeItem {
+abstract class FsTreeItemAbstract extends vscode.TreeItem {
     abstract collapsibleState: vscode.TreeItemCollapsibleState;
 }
 
-class AllFolderTreeItem extends AllFolderTreeItemAbstract {
+class FsTreeItem extends FsTreeItemAbstract {
     private _collapseibleState:vscode.TreeItemCollapsibleState | undefined =
     undefined;
 
@@ -96,18 +96,10 @@ class AllFolderTreeItem extends AllFolderTreeItemAbstract {
     }
 }
 
-class WsFolderTreeItem extends AllFolderTreeItem {
+class FolderTreeItem extends FsTreeItem {
     public iconPath = new vscode.ThemeIcon('folder-opened');
 
-    constructor(public wsFolder:vscode.WorkspaceFolder) {
+    constructor(wsFolder:vscode.WorkspaceFolder) {
         super(wsFolder.name, wsFolder.uri.fsPath);
-    }
-}
-
-class FsTreeItem extends AllFolderTreeItem {
-    private _collapsibleState:vscode.TreeItemCollapsibleState | undefined =
-        undefined;
-    constructor(name:string, public path:string) {
-        super(name, path);
     }
 }
