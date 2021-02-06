@@ -42,6 +42,7 @@ abstract class AllFolderTreeItem extends vscode.TreeItem {
 }
 
 class WsFolderTreeItem extends AllFolderTreeItem {
+    public iconPath = new vscode.ThemeIcon('folder-opened');
     private _collapseibleState:vscode.TreeItemCollapsibleState | undefined =
         undefined;
 
