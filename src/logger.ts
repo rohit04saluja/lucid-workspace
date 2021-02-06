@@ -5,7 +5,7 @@ export class Logger {
     private channel:OutputChannel;
 
     constructor() {
-        this.channel = window.createOutputChannel('workspaces');
+        this.channel = window.createOutputChannel('Workspaces');
     }
 
     /**
