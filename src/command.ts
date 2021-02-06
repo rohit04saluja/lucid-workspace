@@ -50,6 +50,14 @@ export function initCommands () {
                         log.info(`Workspace folder picked is ${value.map(
                             e => `${e.description}/${e.label}`)
                         }`);
+                        if (vscode.workspace.workspaceFolders) {
+                            enable(vscode.workspace.workspaceFolders
+                                .filter(e => 
+                                    value.map(e => e.description)
+                                        .includes(e.uri.fsPath)
+                                )
+                            );
+                        }
                     } else {
                         log.error('No workspace folder was selected');
                     }
