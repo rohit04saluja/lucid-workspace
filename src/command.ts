@@ -38,6 +38,25 @@ export function initCommands () {
                             break;
                     }
                 });
+            } else {
+                vscode.window.showQuickPick(
+                    vscode.workspace.workspaceFolders.map<vscode.QuickPickItem>(e => ({
+                        "label": e.name,
+                        "description": dirname(e.uri.fsPath)
+                    })),
+                    {
+                        "canPickMany": true,
+                        "placeHolder": "Select workspace folders",
+                    }
+                ).then((value) => {
+                    if (value) {
+                        log.info(`Workspace folder picked is ${value.map(
+                            e => `${e.description}/${e.label}`)
+                        }`);
+                    } else {
+                        log.error('No workspace folder was selected');
+                    }
+                });
             }
         } else {
             enable(folders);
