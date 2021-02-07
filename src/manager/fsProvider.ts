@@ -17,48 +17,43 @@ import { getLogger, Logger } from '../logger';
  * A list of all directories inside the given path
  */
 function getChildren(path:string, all:boolean=false):string[] {
-    if (lstatSync(path).isDirectory()) {
-        return readdirSync(path, { withFileTypes: true })
-            .filter(e => e.isDirectory() 
-                && (all ? true: !e.name.startsWith('.'))
-            ).map(e => e.name);
-    } else {
-        return [];
-    }
+    return readdirSync(path, { withFileTypes: true })
+        .filter(e => all ? true: !e.name.startsWith('.')
+        ).map(e => e.name);
 }
 
 /**
  * Class for allFoldersProvider
  */
 export class FsProvider 
-    implements vscode.TreeDataProvider<FolderTreeItem> {
+    implements vscode.TreeDataProvider<FsTreeItem> {
 
     private _onDidChangeTreeData
-        :vscode.EventEmitter<FolderTreeItem | undefined> =
-        new vscode.EventEmitter<FolderTreeItem | undefined>();
-    readonly onDidChangeTreeData:vscode.Event<FolderTreeItem | undefined> =
+        :vscode.EventEmitter<FsTreeItem | undefined> =
+        new vscode.EventEmitter<FsTreeItem | undefined>();
+    readonly onDidChangeTreeData:vscode.Event<FsTreeItem | undefined> =
         this._onDidChangeTreeData.event;
 
     private logger:Logger = getLogger();
-    private root:FolderTreeItem[] = [];
+    private root:FsTreeItem[] = [];
 
     constructor(wsFolders:vscode.WorkspaceFolder[]) {
         this.logger.info('Initializing all folders tree provider');
-        this.root = wsFolders.map(e => new FolderTreeItem(
+        this.root = wsFolders.map(e => new FsTreeItem(
             e.name, e.uri.fsPath
         ));
     }
 
-    getTreeItem(element:FolderTreeItem): vscode.TreeItem {
+    getTreeItem(element:FsTreeItem): vscode.TreeItem {
         return element;
     }
 
-    async getChildren(element?:FolderTreeItem):Promise<FolderTreeItem[]> {
-        let items:FolderTreeItem[] = [];
+    async getChildren(element?:FsTreeItem):Promise<FsTreeItem[]> {
+        let items:FsTreeItem[] = [];
         if (element) {
-            if (element instanceof FolderTreeItem) {
+            if (element instanceof FsTreeItem) {
                 items = getChildren(element.path)
-                    .map(e => new FolderTreeItem(
+                    .map(e => new FsTreeItem(
                         e, join(element.path, e)
                     ));
             }
@@ -69,11 +64,11 @@ export class FsProvider
     }
 }
 
-abstract class FolderTreeItemAbstract extends vscode.TreeItem {
+abstract class FsTreeItemAbstract extends vscode.TreeItem {
     abstract collapsibleState: vscode.TreeItemCollapsibleState;
 }
 
-class FolderTreeItem extends FolderTreeItemAbstract {
+class FsTreeItem extends FsTreeItemAbstract {
     private _collapseibleState:vscode.TreeItemCollapsibleState | undefined =
         undefined;
 
