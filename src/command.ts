@@ -75,5 +75,11 @@ export function initCommands () {
     /** Register disable command */
     vscode.commands.registerCommand('workspaces.disable', () => {
         disable();
-    })
+    });
+
+    /** Register add to active command */
+    vscode.commands.registerCommand('workspaces.add-to-active',
+        (files) => {
+        log.info(`Add to active is called with ${files}`);
+    });
 }

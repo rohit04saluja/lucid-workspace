@@ -35,6 +35,11 @@
         "command": "workspaces.disable",
         "enablement": "workspaces:state == enable",
         "title": "Disable Workspaces"
+      },
+      {
+        "command": "workspaces.add-to-active",
+        "enablement": "workspaces:state == enable",
+        "title": "Add to active view"
       }
     ],
     "viewsContainers": {
@@ -60,7 +65,15 @@
         "contents": "You need to enable Workspaces to view folders.\n[Enable](command:workspaces.enable)",
         "enablement": "workspaces:state == activate"
       }
-    ]
+    ],
+    "menus": {
+        "view/item/context": [
+            {
+                "command": "workspaces.add-to-active",
+                "when": "view == fs"
+            }
+        ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
