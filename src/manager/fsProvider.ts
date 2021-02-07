@@ -27,7 +27,7 @@ function getChildren(path:string, all:boolean=false):string[] {
 }
 
 /**
- * Class for allFoldersProvider
+ * Class for FsProvider
  */
 export class FsProvider 
     implements vscode.TreeDataProvider<FsTreeItem> {
@@ -68,32 +68,19 @@ export class FsProvider
     }
 }
 
-abstract class FsTreeItemAbstract extends vscode.TreeItem {
-    abstract collapsibleState: vscode.TreeItemCollapsibleState;
-}
-
-class FsTreeItem extends FsTreeItemAbstract {
+/**
+ * Class for FsTreeItem
+ */
+class FsTreeItem extends vscode.TreeItem {
     private _collapseibleState:vscode.TreeItemCollapsibleState | undefined =
         undefined;
+    // TODO: Add icon path as per the file extension
 
     constructor(label:string, public path:string) {
         super(label);
-        this.tooltip = this.path;
-    }
-
-    get collapsibleState():vscode.TreeItemCollapsibleState {
-        if (lstatSync(this.path).isDirectory()) {
-            if (this._collapseibleState) {
-                return this._collapseibleState;
-            } else {
-                return vscode.TreeItemCollapsibleState.Collapsed;
-            }
-        } else {
-            return vscode.TreeItemCollapsibleState.None;
-        }
-    }
-
-    set collapsibleState(state:vscode.TreeItemCollapsibleState) {
-        this._collapseibleState = state;
+        this.tooltip = this.id = this.path;
+        this.collapsibleState = lstatSync(this.path).isDirectory()
+            ? vscode.TreeItemCollapsibleState.Collapsed
+            : vscode.TreeItemCollapsibleState.None;
     }
 }
