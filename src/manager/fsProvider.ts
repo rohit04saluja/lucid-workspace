@@ -20,9 +20,7 @@ export class FsProvider
 
     constructor(wsFolders:vscode.WorkspaceFolder[]) {
         this.logger.info('Initializing all folders tree provider');
-        this.root = wsFolders.map(e => new FsTreeItem(
-            e.uri
-        ));
+        this.root = wsFolders.map(e => new FsTreeItem(e.uri));
     }
 
     getTreeItem(element:FsTreeItem): vscode.TreeItem {

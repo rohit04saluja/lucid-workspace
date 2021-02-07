@@ -16,12 +16,14 @@ export class FsManager {
             this.initAFP(wsFolders);
         }
 
+        let _d:vscode.Disposable;
         /** Register add to active command */
-        let _d:vscode.Disposable = vscode.commands.registerCommand(
+        _d = vscode.commands.registerCommand(
             'workspaces.add-to-active',
             (files:vscode.Uri) => {
-            this.logger.info(`Add to active is called with ${files}`);
-        });
+                this.logger.info(`Add to active is called with ${files}`);
+            }
+        );
         this.context.subscriptions.push(_d);
     }
 
