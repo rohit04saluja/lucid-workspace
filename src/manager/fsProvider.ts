@@ -1,4 +1,4 @@
-import { lstatSync, readdirSync } from 'fs';
+import { lstatSync, readdirSync, realpathSync } from 'fs';
 import { join } from 'path';
 import * as vscode from 'vscode';
 import { getLogger, Logger } from '../logger';
@@ -17,8 +17,14 @@ import { getLogger, Logger } from '../logger';
  * A list of all directories inside the given path
  */
 function getChildren(path:vscode.Uri, all:boolean=false):string[] {
-    if (lstatSync(path.fsPath).isDirectory()) {
-        return readdirSync(path.fsPath, { withFileTypes: true })
+    let _path:string;
+    if (lstatSync(path.fsPath).isSymbolicLink()) {
+        _path = realpathSync(path.fsPath);
+    } else {
+        _path = path.fsPath;
+    }
+    if (lstatSync(_path).isDirectory()) {
+        return readdirSync(_path, { withFileTypes: true })
             .filter(e => all ? true: !e.name.startsWith('.')
             ).map(e => e.name);
     } else {
@@ -68,13 +74,18 @@ export class FsProvider
  * Class for FsTreeItem
  */
 class FsTreeItem extends vscode.TreeItem {
-    private _collapseibleState:vscode.TreeItemCollapsibleState | undefined =
-        undefined;
-
     constructor(public resourceUri:vscode.Uri) {
         super(resourceUri);
-        this.collapsibleState = lstatSync(this.resourceUri.fsPath).isDirectory()
-            ? vscode.TreeItemCollapsibleState.Collapsed
-            : vscode.TreeItemCollapsibleState.None;
+        const _lstat = lstatSync(this.resourceUri.fsPath);
+        if (_lstat.isSymbolicLink()
+            && lstatSync(realpathSync(this.resourceUri.fsPath)).isDirectory()) {
+
+            this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+        } else if (_lstat.isDirectory()) {
+            this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+        }
+        if (this.collapsibleState == undefined) {
+            this.collapsibleState = vscode.TreeItemCollapsibleState.None;
+        }
     }
 }
