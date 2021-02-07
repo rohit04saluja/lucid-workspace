@@ -82,8 +82,7 @@ class FsTreeItem extends FsTreeItemAbstract {
     }
 
     get collapsibleState():vscode.TreeItemCollapsibleState {
-        let dirs:string[] = getChildren(this.path);
-        if (dirs.length > 0) {
+        if (lstatSync(this.path).isDirectory()) {
             if (this._collapseibleState) {
                 return this._collapseibleState;
             } else {
