@@ -102,18 +102,18 @@ export function enable(wsFolders:vscode.WorkspaceFolder[],
         .map(e => e.uri).join(', ')
     }`);
 
-        vscode.window.withProgress({
-            location: vscode.ProgressLocation.Notification,
-            title: "Setting up Workspaces to manage your workspace folders"
-        }, () => {
-            return new Promise<void>(resolve => {
-                let fsManager:FsManager = new FsManager(context, wsFolders);
-                resolve();
-            });
-        });
+    vscode.window.withProgress({
+        location: vscode.ProgressLocation.Notification,
+        title: "Setting up Workspaces to manage your workspace folders"
+    }, () => {
+        return new Promise<void>(resolve => {
+            let fsManager:FsManager = new FsManager(context, wsFolders);
 
-    /** Enabling was successful */
-    vscode.commands.executeCommand('setContext', 'workspaces:state', 'enable');
+            /** Enabling was successful */
+            vscode.commands.executeCommand('setContext', 'workspaces:state', 'enable');
+            resolve();
+        });
+    });
 }
 
 /**
