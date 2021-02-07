@@ -4,35 +4,6 @@ import * as vscode from 'vscode';
 import { getLogger, Logger } from '../logger';
 
 /**
- * @brief
- * getDirs
- * 
- * @description
- * Get all directories inside the given path
- * 
- * @param path
- * Path to read
- *
- * @return
- * A list of all directories inside the given path
- */
-function getChildren(path:vscode.Uri, all:boolean=false):string[] {
-    let _path:string;
-    if (lstatSync(path.fsPath).isSymbolicLink()) {
-        _path = realpathSync(path.fsPath);
-    } else {
-        _path = path.fsPath;
-    }
-    if (lstatSync(_path).isDirectory()) {
-        return readdirSync(_path, { withFileTypes: true })
-            .filter(e => all ? true: !e.name.startsWith('.')
-            ).map(e => e.name);
-    } else {
-        return [];
-    }
-}
-
-/**
  * Class for FsProvider
  */
 export class FsProvider 
@@ -61,8 +32,12 @@ export class FsProvider
     async getChildren(element?:FsTreeItem):Promise<FsTreeItem[]> {
         let items:FsTreeItem[] = [];
         if (element) {
-            items = getChildren(element.resourceUri)
-                .map(e => new FsTreeItem(vscode.Uri.parse(join(element.resourceUri.fsPath, e))));
+            const _path:string = realpathSync(element.resourceUri.fsPath)
+            if (lstatSync(_path).isDirectory()) {
+                items = readdirSync(_path)
+                    .filter(e => !e.startsWith('.'))
+                    .map(e => new FsTreeItem(vscode.Uri.parse(join(_path, e))));
+            }
         } else {
             items = this.root;
         }
