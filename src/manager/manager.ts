@@ -9,19 +9,20 @@ export class FsManager {
     private logger: Logger = getLogger();
     private fsp:FsProvider | undefined = undefined;
 
-    constructor (public wsFolders?:vscode.WorkspaceFolder[],
-                 private context:vscode.ExtensionContext) {
+    constructor (private context:vscode.ExtensionContext,
+                 public wsFolders?:vscode.WorkspaceFolder[]) {
         this.logger.info('Initializing folder manager');
         if (wsFolders) {
             this.initAFP(wsFolders);
         }
 
         /** Register add to active command */
-        let _d:vscode.Disposable = vscode.commands.registerCommand('workspaces.add-to-active',
+        let _d:vscode.Disposable = vscode.commands.registerCommand(
+            'workspaces.add-to-active',
             (files:vscode.Uri) => {
             this.logger.info(`Add to active is called with ${files}`);
         });
-        context.subscriptions.push(_d);
+        this.context.subscriptions.push(_d);
     }
 
     private initAFP(wsFolders:vscode.WorkspaceFolder[]) {

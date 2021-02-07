@@ -107,7 +107,7 @@ export function enable(wsFolders:vscode.WorkspaceFolder[],
             title: "Setting up Workspaces to manage your workspace folders"
         }, () => {
             return new Promise<void>(resolve => {
-                let fsManager:FsManager = new FsManager(wsFolders, context);
+                let fsManager:FsManager = new FsManager(context, wsFolders);
                 resolve();
             });
         });
