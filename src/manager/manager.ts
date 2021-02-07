@@ -5,7 +5,7 @@ import { FsProvider as FsProvider } from './fsProvider';
 /**
  * Class for Folder Manager
  */
-export class FolderManager {
+export class FsManager {
     private logger: Logger = getLogger();
     private fsp:FsProvider | undefined = undefined;
 

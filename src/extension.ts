@@ -1,9 +1,9 @@
 import * as vscode from 'vscode';
 import { initCommands } from './command';
 import { Logger, getLogger } from './logger';
-import { FolderManager } from './manager/manager';
+import { FsManager } from './manager/manager';
 
-let folderManager:FolderManager;
+let fsManager:FsManager;
 
 /** this method is called when your extension is activated */
 export function activate(context: vscode.ExtensionContext) {
@@ -40,7 +40,7 @@ export function enable(wsFolders:vscode.WorkspaceFolder[]) {
             title: "Setting up Workspaces to manage your workspace folders"
         }, () => {
             return new Promise<void>(resolve => {
-                folderManager = new FolderManager(wsFolders);
+                fsManager = new FsManager(wsFolders);
                 resolve();
             });
         });
