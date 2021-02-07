@@ -76,7 +76,6 @@ abstract class FolderTreeItemAbstract extends vscode.TreeItem {
 class FolderTreeItem extends FolderTreeItemAbstract {
     private _collapseibleState:vscode.TreeItemCollapsibleState | undefined =
         undefined;
-    public iconPath = new vscode.ThemeIcon('folder');
 
     constructor(label:string, public path:string) {
         super(label);
