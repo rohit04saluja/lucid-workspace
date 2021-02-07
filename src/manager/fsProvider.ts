@@ -16,9 +16,9 @@ import { getLogger, Logger } from '../logger';
  * @return
  * A list of all directories inside the given path
  */
-function getChildren(path:string, all:boolean=false):string[] {
-    if (lstatSync(path).isDirectory()) {
-        return readdirSync(path, { withFileTypes: true })
+function getChildren(path:vscode.Uri, all:boolean=false):string[] {
+    if (lstatSync(path.fsPath).isDirectory()) {
+        return readdirSync(path.fsPath, { withFileTypes: true })
             .filter(e => all ? true: !e.name.startsWith('.')
             ).map(e => e.name);
     } else {
@@ -44,7 +44,7 @@ export class FsProvider
     constructor(wsFolders:vscode.WorkspaceFolder[]) {
         this.logger.info('Initializing all folders tree provider');
         this.root = wsFolders.map(e => new FsTreeItem(
-            e.name, e.uri.fsPath
+            e.uri
         ));
     }
 
@@ -55,12 +55,8 @@ export class FsProvider
     async getChildren(element?:FsTreeItem):Promise<FsTreeItem[]> {
         let items:FsTreeItem[] = [];
         if (element) {
-            if (element instanceof FsTreeItem) {
-                items = getChildren(element.path)
-                    .map(e => new FsTreeItem(
-                        e, join(element.path, e)
-                    ));
-            }
+            items = getChildren(element.resourceUri)
+                .map(e => new FsTreeItem(vscode.Uri.parse(join(element.resourceUri.fsPath, e))));
         } else {
             items = this.root;
         }
@@ -74,12 +70,10 @@ export class FsProvider
 class FsTreeItem extends vscode.TreeItem {
     private _collapseibleState:vscode.TreeItemCollapsibleState | undefined =
         undefined;
-    // TODO: Add icon path as per the file extension
 
-    constructor(label:string, public path:string) {
-        super(label);
-        this.tooltip = this.id = this.path;
-        this.collapsibleState = lstatSync(this.path).isDirectory()
+    constructor(public resourceUri:vscode.Uri) {
+        super(resourceUri);
+        this.collapsibleState = lstatSync(this.resourceUri.fsPath).isDirectory()
             ? vscode.TreeItemCollapsibleState.Collapsed
             : vscode.TreeItemCollapsibleState.None;
     }
