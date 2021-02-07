@@ -49,14 +49,14 @@
     "views": {
       "workspaces": [
         {
-          "id": "all-folders",
+          "id": "fs",
           "name": "All Folders"
         }
       ]
     },
     "viewsWelcome": [
       {
-        "view": "all-folders",
+        "view": "fs",
         "contents": "You need to enable Workspaces to view folders.\n[Enable](command:workspaces.enable)",
         "enablement": "workspaces:state == activate"
       }

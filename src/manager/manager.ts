@@ -19,7 +19,7 @@ export class FolderManager {
     private initAFP(wsFolders:vscode.WorkspaceFolder[]) {
         if (!this.fsp) {
             this.fsp = new FsProvider(wsFolders);
-            vscode.window.registerTreeDataProvider('all-folders', this.fsp);
+            vscode.window.registerTreeDataProvider('fs', this.fsp);
         }
     }
 }
