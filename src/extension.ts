@@ -2,12 +2,11 @@ import * as vscode from 'vscode';
 import { Logger, getLogger } from './logger';
 import { FsManager } from './manager/manager';
 
-let fsManager:FsManager;
-
 /** this method is called when your extension is activated */
 export function activate(context: vscode.ExtensionContext) {
     /** Initialize logger */
-    const log:Logger = getLogger()
+    const log:Logger = getLogger();
+    let _d:vscode.Disposable;
     log.info("Workspaces is activated");
 
     /** Set to context that workspaces is activated */
@@ -15,7 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
         'activate');
 
     /** Register enable command */
-    vscode.commands.registerCommand('workspaces.enable',
+    _d = vscode.commands.registerCommand('workspaces.enable',
         (folders:vscode.WorkspaceFolder[]) => {
         if (!folders || folders.length == 0) {
             log.info('Enable command called without any folders');
@@ -43,7 +42,8 @@ export function activate(context: vscode.ExtensionContext) {
             } else {
                 if (vscode.workspace.workspaceFolders.length > 1) {
                     vscode.window.showQuickPick(
-                        vscode.workspace.workspaceFolders.map<vscode.QuickPickItem>(e => ({
+                        vscode.workspace.workspaceFolders
+                            .map<vscode.QuickPickItem>(e => ({
                             "label": e.name,
                             "description": e.uri.fsPath
                         })),
@@ -61,7 +61,7 @@ export function activate(context: vscode.ExtensionContext) {
                                     .filter(e => 
                                         value.map(e => e.description)
                                             .includes(e.uri.fsPath)
-                                    )
+                                    ), context
                                 );
                             }
                         } else {
@@ -69,19 +69,20 @@ export function activate(context: vscode.ExtensionContext) {
                         }
                     });
                 } else {
-                    enable([vscode.workspace.workspaceFolders[0]]);
+                    enable([vscode.workspace.workspaceFolders[0]], context);
                 }
             }
         } else {
-            enable(folders);
+            enable(folders, context);
         }
     });
+    context.subscriptions.push(_d);
 
     /** Register disable command */
-    vscode.commands.registerCommand('workspaces.disable', () => {
+    _d = vscode.commands.registerCommand('workspaces.disable', () => {
         disable();
     });
-
+    context.subscriptions.push(_d);
 }
 
 /** this method is called when your extension is deactivated */
@@ -94,7 +95,8 @@ export function deactivate() {}
  * @description
  * enable the extension and Initialize the tree view
  */
-export function enable(wsFolders:vscode.WorkspaceFolder[]) {
+export function enable(wsFolders:vscode.WorkspaceFolder[],
+                       context:vscode.ExtensionContext) {
     const log:Logger = getLogger();
     log.info(`Workspaces is enabling now with workspace folders ${wsFolders
         .map(e => e.uri).join(', ')
@@ -105,7 +107,7 @@ export function enable(wsFolders:vscode.WorkspaceFolder[]) {
             title: "Setting up Workspaces to manage your workspace folders"
         }, () => {
             return new Promise<void>(resolve => {
-                fsManager = new FsManager(wsFolders);
+                let fsManager:FsManager = new FsManager(wsFolders, context);
                 resolve();
             });
         });
