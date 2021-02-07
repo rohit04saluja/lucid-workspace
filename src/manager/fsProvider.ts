@@ -17,9 +17,13 @@ import { getLogger, Logger } from '../logger';
  * A list of all directories inside the given path
  */
 function getChildren(path:string, all:boolean=false):string[] {
-    return readdirSync(path, { withFileTypes: true })
-        .filter(e => all ? true: !e.name.startsWith('.')
-        ).map(e => e.name);
+    if (lstatSync(path).isDirectory()) {
+        return readdirSync(path, { withFileTypes: true })
+            .filter(e => all ? true: !e.name.startsWith('.')
+            ).map(e => e.name);
+    } else {
+        return [];
+    }
 }
 
 /**
