@@ -1,3 +1,4 @@
+import AsyncLock = require('async-lock');
 import * as vscode from 'vscode';
 import { Logger, getLogger } from '../logger' 
 import { FsProvider } from './fsTree';
@@ -8,6 +9,7 @@ import { FsProvider } from './fsTree';
 export class FsManager {
     private logger: Logger = getLogger();
     private fsp:FsProvider | undefined = undefined;
+    private lock = new AsyncLock();
 
     constructor (private context:vscode.ExtensionContext,
                  public wsFolders?:vscode.WorkspaceFolder[]) {
@@ -27,11 +29,13 @@ export class FsManager {
         this.context.subscriptions.push(_d);
     }
 
-    private initAFP(wsFolders:vscode.WorkspaceFolder[]) {
-        if (!this.fsp) {
-            this.fsp = new FsProvider(wsFolders);
-            vscode.window.registerTreeDataProvider('fs', this.fsp);
-        }
+    private initFSP(wsFolders:vscode.WorkspaceFolder[]) {
+        this.lock.acquire('fsp', () => {
+            if (!this.fsp) {
+                this.fsp = new FsProvider(wsFolders);
+                vscode.window.registerTreeDataProvider('fs', this.fsp);
+            }
+        });
     }
 }
 
