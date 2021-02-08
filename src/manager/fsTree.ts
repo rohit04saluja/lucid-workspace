@@ -1,3 +1,4 @@
+import AsyncLock = require('async-lock');
 import { lstatSync, readdirSync, realpathSync } from 'fs';
 import { join } from 'path';
 import * as vscode from 'vscode';
@@ -14,6 +15,7 @@ export class FsProvider implements vscode.TreeDataProvider<FsTreeItem> {
 
     private logger:Logger = getLogger();
     private root:FsTreeItem[] = [];
+    private lock = new AsyncLock();
 
     constructor(wsFolders:vscode.WorkspaceFolder[]) {
         this.logger.info('Initializing all folders tree provider');
@@ -37,6 +39,32 @@ export class FsProvider implements vscode.TreeDataProvider<FsTreeItem> {
             items = this.root;
         }
         return Promise.resolve(items);
+    }
+
+    // TODO: Need syncronization for root updates
+    async addFolders(folders:vscode.WorkspaceFolder[]) {
+        this.lock.acquire('root', () => {
+            this.root = this.root.concat(
+                folders.map(e => new FsTreeItem(e.uri))
+            );
+        }).then(() => {
+            this.update();
+        });
+    }
+
+    async removeFolders(folders:vscode.WorkspaceFolder[]) {
+        let _match:string[] = folders.map(e => e.uri.fsPath);
+        this.lock.acquire('root', () => {
+            this.root = this.root.filter(
+                e => _match.includes(e.resourceUri.fsPath)?false:true
+            );
+        }).then(() => {
+            this.update();
+        });
+    }
+
+    async update() {
+        this._onDidChangeTreeData.fire(undefined);
     }
 }
 
