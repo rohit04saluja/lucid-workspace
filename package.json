@@ -41,17 +41,17 @@
       {
         "command": "lucid-workspace.enable",
         "enablement": "lucid-workspace:state == activate || lucid-workspace:state == disable",
-        "title": "Enable Lucid Workspace"
+        "title": "Lucid Workspace: Enable Lucid Workspace"
       },
       {
         "command": "lucid-workspace.disable",
         "enablement": "lucid-workspace:state == enable",
-        "title": "Disable Lucid Workspace"
+        "title": "Lucid Workspace: Disable Lucid Workspace"
       },
       {
         "command": "lucid-workspace.add-to-active",
         "enablement": "lucid-workspace:state == enable",
-        "title": "Add to active view"
+        "title": "Lucid Workspace: Add to active view"
       }
     ],
     "viewsContainers": {
