@@ -6,11 +6,8 @@ import { getLogger, Logger } from '../logger';
 /**
  * Class for FsProvider
  */
-export class FsProvider 
-    implements vscode.TreeDataProvider<FsTreeItem> {
-
-    private _onDidChangeTreeData
-        :vscode.EventEmitter<FsTreeItem | undefined> =
+export class FsProvider implements vscode.TreeDataProvider<FsTreeItem> {
+    private _onDidChangeTreeData:vscode.EventEmitter<FsTreeItem | undefined> =
         new vscode.EventEmitter<FsTreeItem | undefined>();
     readonly onDidChangeTreeData:vscode.Event<FsTreeItem | undefined> =
         this._onDidChangeTreeData.event;
