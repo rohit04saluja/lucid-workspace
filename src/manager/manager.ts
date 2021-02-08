@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { Logger, getLogger } from '../logger' 
-import { FsProvider as FsProvider } from './fsProvider';
+import { FsProvider } from './fsTree';
 
 /**
  * Class for Folder Manager
