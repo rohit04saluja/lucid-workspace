@@ -7,14 +7,14 @@ export function activate(context: vscode.ExtensionContext) {
     /** Initialize logger */
     const log:Logger = getLogger();
     let _d:vscode.Disposable;
-    log.info("Workspaces is activated");
+    log.info("Lucid Workspace is activated");
 
-    /** Set to context that workspaces is activated */
-    vscode.commands.executeCommand('setContext', 'workspaces:state',
+    /** Set to context that lucid-workspace is activated */
+    vscode.commands.executeCommand('setContext', 'lucid-workspace:state',
         'activate');
 
     /** Register enable command */
-    _d = vscode.commands.registerCommand('workspaces.enable',
+    _d = vscode.commands.registerCommand('lucid-workspace.enable',
         (folders:vscode.WorkspaceFolder[]) => {
         if (!folders || folders.length == 0) {
             log.info('Enable command called without any folders');
@@ -23,9 +23,9 @@ export function activate(context: vscode.ExtensionContext) {
 
                 log.info('There are no folders in this workspace')
                 const opts = ['Add Folder', 'Ok'];
-                vscode.window.showErrorMessage(`Workspaces can not be enabled.
-                    There are no folders added to Workspace. Please add
-                    folder(s) to workspace and try again.`,
+                vscode.window.showErrorMessage(`Lucid Workspace can not be
+                    enabled. There are no folders added to Workspace. Please
+                    add folder(s) to workspace and try again.`,
                     ...opts).then((value:string | undefined) => {
 
                     switch(value) {
@@ -52,7 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(_d);
 
     /** Register disable command */
-    _d = vscode.commands.registerCommand('workspaces.disable', () => {
+    _d = vscode.commands.registerCommand('lucid-workspace.disable', () => {
         disable();
     });
     context.subscriptions.push(_d);
@@ -71,19 +71,20 @@ export function deactivate() {}
 export function enable(wsFolders:vscode.WorkspaceFolder[],
                        context:vscode.ExtensionContext) {
     const log:Logger = getLogger();
-    log.info(`Workspaces is enabling now with workspace folders ${wsFolders
+    log.info(`Lucid Workspace is enabling now with workspace folders ${wsFolders
         .map(e => e.uri).join(', ')
     }`);
 
     vscode.window.withProgress({
         location: vscode.ProgressLocation.Notification,
-        title: "Setting up Workspaces to manage your workspace folders"
+        title: "Setting up Lucid Workspace to manage your workspace folders"
     }, () => {
         return new Promise<void>(resolve => {
             let fsManager:FsManager = new FsManager(context, wsFolders);
 
             /** Enabling was successful */
-            vscode.commands.executeCommand('setContext', 'workspaces:state', 'enable');
+            vscode.commands.executeCommand('setContext',
+                'lucid-workspace:state', 'enable');
             resolve();
         });
     });
@@ -98,6 +99,7 @@ export function enable(wsFolders:vscode.WorkspaceFolder[],
  */
 export function disable() {
     const log:Logger = getLogger();
-    log.info(`Workspaces is disabling now`);
-    vscode.commands.executeCommand('setContext', 'workspaces:state', 'disable');
+    log.info(`Lucid Workspace is disabling now`);
+    vscode.commands.executeCommand('setContext', 'lucid-workspace:state',
+        'disable');
 }

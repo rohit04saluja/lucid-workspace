@@ -1,15 +1,15 @@
 {
-  "name": "workspaces",
-  "displayName": "Workspaces",
-  "description": "Extension to manage large workspaces",
+  "name": "lucid-workspace",
+  "displayName": "Lucid Workspace",
+  "description": "An extension to manage large lucid-workspace",
   "version": "0.0.1",
-  "homepage": "https://github.com/rohit04saluja/workspaces",
+  "homepage": "https://github.com/rohit04saluja/lucid-workspace",
   "repository": {
     "type": "git",
-    "url": "https://github.com/rohit04saluja/workspaces"
+    "url": "https://github.com/rohit04saluja/lucid-workspace"
   },
   "bugs": {
-    "url": "https://github.com/rohit04saluja/workspaces/issues"
+    "url": "https://github.com/rohit04saluja/lucid-workspace/issues"
   },
   "author": "rohit04saluja",
   "publisher": "rohit04saluja",
@@ -39,32 +39,32 @@
   "contributes": {
     "commands": [
       {
-        "command": "workspaces.enable",
-        "enablement": "workspaces:state == activate || workspaces:state == disable",
-        "title": "Enable Workspaces"
+        "command": "lucid-workspace.enable",
+        "enablement": "lucid-workspace:state == activate || lucid-workspace:state == disable",
+        "title": "Enable Lucid Workspace"
       },
       {
-        "command": "workspaces.disable",
-        "enablement": "workspaces:state == enable",
-        "title": "Disable Workspaces"
+        "command": "lucid-workspace.disable",
+        "enablement": "lucid-workspace:state == enable",
+        "title": "Disable Lucid Workspace"
       },
       {
-        "command": "workspaces.add-to-active",
-        "enablement": "workspaces:state == enable",
+        "command": "lucid-workspace.add-to-active",
+        "enablement": "lucid-workspace:state == enable",
         "title": "Add to active view"
       }
     ],
     "viewsContainers": {
       "activitybar": [
         {
-          "id": "workspaces",
-          "title": "Workspaces",
+          "id": "lucid-workspace",
+          "title": "Lucid Workspace",
           "icon": "_static/icon.svg"
         }
       ]
     },
     "views": {
-      "workspaces": [
+      "lucid-workspace": [
         {
           "id": "fs",
           "name": "All Folders"
@@ -74,14 +74,14 @@
     "viewsWelcome": [
       {
         "view": "fs",
-        "contents": "You need to enable Workspaces to view folders.\n[Enable](command:workspaces.enable)",
-        "enablement": "workspaces:state == activate"
+        "contents": "You need to enable Lucid Workspace to view folders.\n[Enable](command:lucid-workspace.enable)",
+        "enablement": "lucid-workspace:state == activate"
       }
     ],
     "menus": {
       "view/item/context": [
         {
-          "command": "workspaces.add-to-active",
+          "command": "lucid-workspace.add-to-active",
           "when": "view == fs"
         }
       ]

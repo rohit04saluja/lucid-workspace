@@ -22,7 +22,7 @@ export class FsManager {
         let _d:vscode.Disposable;
         /** Register add to active command */
         _d = vscode.commands.registerCommand(
-            'workspaces.add-to-active',
+            'lucid-workspace.add-to-active',
             (files:vscode.Uri) => {
                 this.logger.info(`Add to active is called with ${files}`);
             }
