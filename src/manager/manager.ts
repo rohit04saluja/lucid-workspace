@@ -8,14 +8,15 @@ import { FsProvider } from './fsTree';
  */
 export class FsManager {
     private logger: Logger = getLogger();
-    private fsp:FsProvider | undefined = undefined;
+    private fsp:FsProvider = new FsProvider();
+    public wsFolders:vscode.WorkspaceFolder[] = [];
     private lock = new AsyncLock();
 
     constructor (private context:vscode.ExtensionContext,
-                 public wsFolders?:vscode.WorkspaceFolder[]) {
+                 wsFolders?:vscode.WorkspaceFolder[]) {
         this.logger.info('Initializing folder manager');
         if (wsFolders) {
-            this.initAFP(wsFolders);
+            this.addWsFolders(wsFolders);
         }
 
         let _d:vscode.Disposable;
@@ -29,13 +30,23 @@ export class FsManager {
         this.context.subscriptions.push(_d);
     }
 
-    private initFSP(wsFolders:vscode.WorkspaceFolder[]) {
-        this.lock.acquire('fsp', () => {
-            if (!this.fsp) {
-                this.fsp = new FsProvider(wsFolders);
-                vscode.window.registerTreeDataProvider('fs', this.fsp);
-            }
-        });
+    public addWsFolders(folders:vscode.WorkspaceFolder[]) {
+        this.logger.info(`Add ${folders.map(e => e.uri.fsPath)} to FS manager`);
+        this.lock.acquire(
+            'wsFolders',
+            () => this.wsFolders = this.wsFolders.concat(folders)
+        );
+        this.fsp.addFolders(folders);
+    }
+
+    public removeWsFolders(folders:vscode.WorkspaceFolder[]) {
+        this.logger.info(`Remove ${
+            folders.map(e => e.uri.fsPath)
+        } from FS manager`);
+        this.lock.acquire('wsFolders', () => 
+            this.wsFolders = this.wsFolders.filter(e => !folders.includes(e))
+        );
+        this.fsp.removeFolders(folders);
     }
 }
 

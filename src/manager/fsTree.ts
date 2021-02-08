@@ -17,9 +17,11 @@ export class FsProvider implements vscode.TreeDataProvider<FsTreeItem> {
     private root:FsTreeItem[] = [];
     private lock = new AsyncLock();
 
-    constructor(wsFolders:vscode.WorkspaceFolder[]) {
-        this.logger.info('Initializing all folders tree provider');
-        this.root = wsFolders.map(e => new FsTreeItem(e.uri));
+    constructor(wsFolders?:vscode.WorkspaceFolder[]) {
+        this.logger.info('Initializing fs tree provider');
+        if (wsFolders) {
+            this.addFolders(wsFolders);
+        }
     }
 
     getTreeItem(element:FsTreeItem): vscode.TreeItem {
