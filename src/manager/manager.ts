@@ -28,6 +28,24 @@ export class FsManager {
             }
         );
         this.context.subscriptions.push(_d);
+
+        // TODO: register commands
+        /** Register add ws folders command */
+        _d = vscode.commands.registerCommand(
+            'lucid-workspace.add-ws-folders',
+            (folders:vscode.WorkspaceFolder[] | undefined) => {
+                this.logger.info(`Add ws folders called with ${folders}`);
+                if (folders == undefined || folders.length == 0) {
+                    wsFoldersQuickPick(undefined, this.wsFolders).then(
+                        (value) => this.addWsFolders(value),
+                        () => this.logger.warn('No folders selected')
+                    );
+                } else {
+                    this.addWsFolders(folders);
+                }
+            }
+        );
+        this.context.subscriptions.push(_d);
     }
 
     public addWsFolders(folders:vscode.WorkspaceFolder[]) {
@@ -54,17 +72,23 @@ export class FsManager {
  * @brief
  * wsFoldersQuickPick
  *
- * @param existingFolders 
+ * @param excludes 
  *
  * @return
  * Promises selected workspace folders 
  */
-export function wsFoldersQuickPick(existingFolders?:vscode.WorkspaceFolder[])
+export function wsFoldersQuickPick(
+    folders?:vscode.WorkspaceFolder[],
+    excludes?:vscode.WorkspaceFolder[])
     :Promise<vscode.WorkspaceFolder[]> {
 
+    if (!folders) {
+        folders = vscode.workspace.workspaceFolders?
+            [...vscode.workspace.workspaceFolders]:[];
+    }
     let _filtered:vscode.WorkspaceFolder[] | undefined =
-        vscode.workspace.workspaceFolders
-        ?.filter(e => existingFolders?existingFolders.includes(e):true);
+        folders
+        ?.filter(e => excludes?!excludes.includes(e):true);
     if (_filtered) {
         if (_filtered.length > 1) {
             return new Promise<vscode.WorkspaceFolder[]>((resolve, reject) => {
@@ -76,8 +100,8 @@ export function wsFoldersQuickPick(existingFolders?:vscode.WorkspaceFolder[])
                         "canPickMany": true,
                         "placeHolder": "Select workspace folders"
                     }).then((value:vscode.QuickPickItem[] | undefined) => {
-                        if (value && vscode.workspace.workspaceFolders) {
-                            resolve(vscode.workspace.workspaceFolders
+                        if (value && folders) {
+                            resolve(folders
                                 .filter(e => value.map(e => e.description)
                                     .includes(e.uri.fsPath)));
                         }

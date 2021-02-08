@@ -52,6 +52,11 @@
         "command": "lucid-workspace.add-to-active",
         "enablement": "lucid-workspace:state == enable",
         "title": "Lucid Workspace: Add to active view"
+      },
+      {
+        "command": "lucid-workspace.add-ws-folders",
+        "enablement": "lucid-workspace:state == enable",
+        "title": "Lucid Workspace: Add Workspace Folder"
       }
     ],
     "viewsContainers": {
