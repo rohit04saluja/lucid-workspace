@@ -5,11 +5,11 @@
   "version": "0.0.1",
   "homepage": "https://github.com/rohit04saluja/workspaces",
   "repository": {
-      "type": "git",
-      "url": "https://github.com/rohit04saluja/workspaces"
+    "type": "git",
+    "url": "https://github.com/rohit04saluja/workspaces"
   },
   "bugs": {
-      "url": "https://github.com/rohit04saluja/workspaces/issues"
+    "url": "https://github.com/rohit04saluja/workspaces/issues"
   },
   "author": "rohit04saluja",
   "publisher": "rohit04saluja",
@@ -67,12 +67,12 @@
       }
     ],
     "menus": {
-        "view/item/context": [
-            {
-                "command": "workspaces.add-to-active",
-                "when": "view == fs"
-            }
-        ]
+      "view/item/context": [
+        {
+          "command": "workspaces.add-to-active",
+          "when": "view == fs"
+        }
+      ]
     }
   },
   "scripts": {
@@ -84,12 +84,14 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
+    "@types/async-lock": "^1.1.2",
     "@types/glob": "^7.1.3",
     "@types/mocha": "^8.0.0",
     "@types/node": "^12.11.7",
     "@types/vscode": "^1.52.0",
     "@typescript-eslint/eslint-plugin": "^4.1.1",
     "@typescript-eslint/parser": "^4.1.1",
+    "async-lock": "^1.2.8",
     "eslint": "^7.9.0",
     "glob": "^7.1.6",
     "mocha": "^8.1.3",
