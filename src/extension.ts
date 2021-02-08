@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { Logger, getLogger } from './logger';
-import { FsManager } from './manager/manager';
+import { FsManager, wsFoldersQuickPick } from './manager/manager';
 
 /** this method is called when your extension is activated */
 export function activate(context: vscode.ExtensionContext) {
@@ -40,37 +40,10 @@ export function activate(context: vscode.ExtensionContext) {
                     }
                 });
             } else {
-                if (vscode.workspace.workspaceFolders.length > 1) {
-                    vscode.window.showQuickPick(
-                        vscode.workspace.workspaceFolders
-                            .map<vscode.QuickPickItem>(e => ({
-                            "label": e.name,
-                            "description": e.uri.fsPath
-                        })),
-                        {
-                            "canPickMany": true,
-                            "placeHolder": "Select workspace folders",
-                        }
-                    ).then((value) => {
-                        if (value) {
-                            log.info(`Workspace folder picked is ${value.map(
-                                e => `${e.description}/${e.label}`)
-                            }`);
-                            if (vscode.workspace.workspaceFolders) {
-                                enable(vscode.workspace.workspaceFolders
-                                    .filter(e => 
-                                        value.map(e => e.description)
-                                            .includes(e.uri.fsPath)
-                                    ), context
-                                );
-                            }
-                        } else {
-                            log.error('No workspace folder was selected');
-                        }
-                    });
-                } else {
-                    enable([vscode.workspace.workspaceFolders[0]], context);
-                }
+                wsFoldersQuickPick().then(
+                    (value:vscode.WorkspaceFolder[]) => enable(value, context),
+                    () => log.error('No workspace folder was selected')
+                );
             }
         } else {
             enable(folders, context);

@@ -34,3 +34,45 @@ export class FsManager {
         }
     }
 }
+
+/**
+ * @brief
+ * wsFoldersQuickPick
+ *
+ * @param existingFolders 
+ *
+ * @return
+ * Promises selected workspace folders 
+ */
+export function wsFoldersQuickPick(existingFolders?:vscode.WorkspaceFolder[])
+    :Promise<vscode.WorkspaceFolder[]> {
+
+    let _filtered:vscode.WorkspaceFolder[] | undefined =
+        vscode.workspace.workspaceFolders
+        ?.filter(e => existingFolders?existingFolders.includes(e):true);
+    if (_filtered) {
+        if (_filtered.length > 1) {
+            return new Promise<vscode.WorkspaceFolder[]>((resolve, reject) => {
+                if (_filtered) {
+                    vscode.window.showQuickPick(_filtered
+                        .map<vscode.QuickPickItem>(e => 
+                            ({ "label": e.name, "description": e.uri.fsPath })
+                    ), {
+                        "canPickMany": true,
+                        "placeHolder": "Select workspace folders"
+                    }).then((value:vscode.QuickPickItem[] | undefined) => {
+                        if (value && vscode.workspace.workspaceFolders) {
+                            resolve(vscode.workspace.workspaceFolders
+                                .filter(e => value.map(e => e.description)
+                                    .includes(e.uri.fsPath)));
+                        }
+                        reject();
+                    });
+                }
+            });
+        } else {
+            return Promise.resolve(_filtered);
+        }
+    }
+    return Promise.reject();
+}
