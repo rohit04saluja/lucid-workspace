@@ -22,6 +22,7 @@ export class FsProvider implements vscode.TreeDataProvider<FsTreeItem> {
         if (wsFolders) {
             this.addFolders(wsFolders);
         }
+        this.updateContext();
     }
 
     getTreeItem(element:FsTreeItem): vscode.TreeItem {
@@ -46,14 +47,25 @@ export class FsProvider implements vscode.TreeDataProvider<FsTreeItem> {
     async addFolders(folders:vscode.WorkspaceFolder[]) {
         this.lock.acquire('root', () => this.root =
             this.root.concat(folders.map(e => new FsTreeItem(e.uri)))
-        ).then(() => this.refresh());
+        ).then(() => {
+            this.refresh();
+            this.updateContext();
+        });
     }
 
     async removeFolders(folders:vscode.WorkspaceFolder[]) {
         let _match:string[] = folders.map(e => e.uri.fsPath);
         this.lock.acquire('root', () => this.root = this.root.filter(
             e => _match.includes(e.resourceUri.fsPath)?false:true
-        )).then(() => this.refresh());
+        )).then(() => {
+            this.refresh();
+            this.updateContext()
+        });
+    }
+
+    private updateContext() {
+        vscode.commands.executeCommand('setContext',
+            'lucid-workspace.fs.root.length', this.root.length);
     }
 
     async refresh() {
