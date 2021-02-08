@@ -57,6 +57,11 @@
         "command": "lucid-workspace.add-ws-folders",
         "enablement": "lucid-workspace:state == enable",
         "title": "Lucid Workspace: Add Workspace Folder"
+      },
+      {
+        "command": "lucid-workspace.remove-ws-folders",
+        "enablement": "lucid-workspace:state == enable",
+        "title": "Lucid Workspace: Remove Workspace Folder"
       }
     ],
     "viewsContainers": {
