@@ -46,17 +46,17 @@ export class FsProvider implements vscode.TreeDataProvider<FsTreeItem> {
     async addFolders(folders:vscode.WorkspaceFolder[]) {
         this.lock.acquire('root', () => this.root =
             this.root.concat(folders.map(e => new FsTreeItem(e.uri)))
-        ).then(() => this.update());
+        ).then(() => this.refresh());
     }
 
     async removeFolders(folders:vscode.WorkspaceFolder[]) {
         let _match:string[] = folders.map(e => e.uri.fsPath);
         this.lock.acquire('root', () => this.root = this.root.filter(
             e => _match.includes(e.resourceUri.fsPath)?false:true
-        )).then(() => this.update());
+        )).then(() => this.refresh());
     }
 
-    async update() {
+    async refresh() {
         this._onDidChangeTreeData.fire(undefined);
     }
 }
