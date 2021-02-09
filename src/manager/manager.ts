@@ -8,20 +8,23 @@ import { FsProvider } from './fsTree';
  */
 export class FsManager {
     private logger: Logger = getLogger();
-    private fsp:FsProvider;
+    private fsp:FsProvider = new FsProvider();
     public wsFolders:vscode.WorkspaceFolder[] = [];
     private lock = new AsyncLock();
+    private _enable: boolean = false;
 
-    constructor (private context:vscode.ExtensionContext,
+    constructor(private context:vscode.ExtensionContext,
                  wsFolders?:vscode.WorkspaceFolder[]) {
         this.logger.info('Initializing folder manager');
-        this.fsp = new FsProvider();
-        vscode.window.registerTreeDataProvider('fs', this.fsp);
+        let _d:vscode.Disposable;
+        _d = vscode.window.registerTreeDataProvider('fs', this.fsp);
+        this.context.subscriptions.push(_d);
+
         if (wsFolders) {
             this.addWsFolders(wsFolders);
         }
 
-        let _d:vscode.Disposable;
+        /** Register the commands */
         /** Register add to active command */
         _d = vscode.commands.registerCommand(
             'lucid-workspace.add-to-active',
