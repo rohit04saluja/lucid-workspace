@@ -69,20 +69,11 @@
         "icon": "$(remove)"
       }
     ],
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "lucid-workspace",
-          "title": "Lucid Workspace",
-          "icon": "_static/icon.svg"
-        }
-      ]
-    },
     "views": {
-      "lucid-workspace": [
+      "explorer": [
         {
           "id": "fs",
-          "name": "View all"
+          "name": "Lucid Workspace FS"
         }
       ]
     },
