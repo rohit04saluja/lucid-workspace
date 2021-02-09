@@ -85,12 +85,12 @@
       {
         "view": "fs",
         "contents": "You need to enable Lucid Workspace to view folders.\n[Enable](command:lucid-workspace.enable)",
-        "enablement": "lucid-workspace:state == activate"
+        "when": "lucid-workspace:state == activate"
       },
       {
         "view": "fs",
-        "contents": "Add workspace folders to start managing them better.\n[Add Folder](command:lucid-workspace.add-ws-folders",
-        "enablement": "lucid-worksace:state == enable && lucid-workspace.fs.root.length == 0"
+        "contents": "Add workspace folders to start managing them better.\n[Add Folder](command:lucid-workspace.add-ws-folders)",
+        "when": "lucid-workspace:state == enable"
       }
     ],
     "menus": {
