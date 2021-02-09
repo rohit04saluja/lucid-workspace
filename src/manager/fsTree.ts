@@ -65,7 +65,7 @@ export class FsProvider implements vscode.TreeDataProvider<FsTreeItem> {
 
     private updateContext() {
         vscode.commands.executeCommand('setContext',
-            'lucid-workspace.fs.root.length', this.root.length);
+            'lucid-workspace:fs.root.length', this.root.length);
     }
 
     async refresh() {

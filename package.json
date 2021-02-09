@@ -109,13 +109,13 @@
         {
           "command": "lucid-workspace.add-ws-folders",
           "title": "Add",
-          "when": "lucid-workspace:state == enable",
+          "when": "lucid-workspace:state == enable && lucid-workspace:fs.root.length > 0",
           "group": "navigation"
         },
         {
           "command": "lucid-workspace.remove-ws-folders",
           "title": "Remove",
-          "when": "lucid-workspace:state == enable",
+          "when": "lucid-workspace:state == enable && lucid-workspace:fs.root.length > 0",
           "group": "navigation"
         }
       ],
