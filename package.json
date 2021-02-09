@@ -53,8 +53,13 @@
       {
         "command": "lucid-workspace.add-to-active",
         "enablement": "lucid-workspace:state == enable",
-        "title": "Lucid Workspace: Add to active view",
+        "title": "Add to active view",
         "icon": "$(add)"
+      },
+      {
+        "command": "lucid-workspace.remove-from-active",
+        "enablement": "lucid-workspace:state == enable",
+        "title": "Remove from active view"
       },
       {
         "command": "lucid-workspace.add-ws-folders",
@@ -67,6 +72,12 @@
         "enablement": "lucid-workspace:state == enable",
         "title": "Lucid Workspace: Remove Workspace Folder",
         "icon": "$(remove)"
+      },
+      {
+        "command": "lucid-workspace.refresh-fs",
+        "enablement": "lucid-workspace:state == enable && lucid-workspace:fs.root.length > 0",
+        "title": "Refresh Tree View",
+        "icon": "$(refresh)"
       }
     ],
     "views": {
@@ -92,6 +103,12 @@
     "menus": {
       "view/title": [
         {
+          "command": "lucid-workspace.enable",
+          "title": "Enable",
+          "when": "lucid-workspace:state == activate && lucid-workspace:fs.root.length > 0",
+          "group": "navigation"
+        },
+        {
           "command": "lucid-workspace.disable",
           "title": "Disable",
           "when": "lucid-workspace:state == enable",
@@ -108,11 +125,21 @@
           "title": "Remove",
           "when": "lucid-workspace:state == enable && lucid-workspace:fs.root.length > 0",
           "group": "navigation"
+        },
+        {
+          "command": "lucid-workspace.refresh-fs",
+          "title": "Refresh",
+          "when": "lucid-workspace:state == enable && lucid-workspace:fs.root.length > 0",
+          "group": "navigation"
         }
       ],
       "view/item/context": [
         {
           "command": "lucid-workspace.add-to-active",
+          "when": "view == fs"
+        },
+        {
+          "command": "lucid-workspace.refresh-fs",
           "when": "view == fs"
         }
       ]
