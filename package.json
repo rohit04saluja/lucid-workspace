@@ -41,27 +41,32 @@
       {
         "command": "lucid-workspace.enable",
         "enablement": "lucid-workspace:state == activate || lucid-workspace:state == disable",
-        "title": "Lucid Workspace: Enable Lucid Workspace"
+        "title": "Lucid Workspace: Enable Lucid Workspace",
+        "icon": "$(play)"
       },
       {
         "command": "lucid-workspace.disable",
         "enablement": "lucid-workspace:state == enable",
-        "title": "Lucid Workspace: Disable Lucid Workspace"
+        "title": "Lucid Workspace: Disable Lucid Workspace",
+        "icon": "$(close)"
       },
       {
         "command": "lucid-workspace.add-to-active",
         "enablement": "lucid-workspace:state == enable",
-        "title": "Lucid Workspace: Add to active view"
+        "title": "Lucid Workspace: Add to active view",
+        "icon": "$(add)"
       },
       {
         "command": "lucid-workspace.add-ws-folders",
         "enablement": "lucid-workspace:state == enable",
-        "title": "Lucid Workspace: Add Workspace Folder"
+        "title": "Lucid Workspace: Add Workspace Folder",
+        "icon": "$(add)"
       },
       {
         "command": "lucid-workspace.remove-ws-folders",
         "enablement": "lucid-workspace:state == enable",
-        "title": "Lucid Workspace: Remove Workspace Folder"
+        "title": "Lucid Workspace: Remove Workspace Folder",
+        "icon": "$(remove)"
       }
     ],
     "viewsContainers": {
@@ -94,6 +99,26 @@
       }
     ],
     "menus": {
+      "view/title": [
+        {
+          "command": "lucid-workspace.disable",
+          "title": "Disable",
+          "when": "lucid-workspace:state == enable",
+          "group": "navigation"
+        },
+        {
+          "command": "lucid-workspace.add-ws-folders",
+          "title": "Add",
+          "when": "lucid-workspace:state == enable",
+          "group": "navigation"
+        },
+        {
+          "command": "lucid-workspace.remove-ws-folders",
+          "title": "Remove",
+          "when": "lucid-workspace:state == enable",
+          "group": "navigation"
+        }
+      ],
       "view/item/context": [
         {
           "command": "lucid-workspace.add-to-active",
