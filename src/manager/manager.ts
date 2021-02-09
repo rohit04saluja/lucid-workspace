@@ -31,7 +31,6 @@ export class FsManager {
         );
         this.context.subscriptions.push(_d);
 
-        // TODO: register commands
         /** Register add ws folders command */
         _d = vscode.commands.registerCommand(
             'lucid-workspace.add-ws-folders',
@@ -62,7 +61,9 @@ export class FsManager {
                 } else {
                     this.removeWsFolders(folders);
                 }
-            })
+            }
+        );
+        this.context.subscriptions.push(_d);
     }
 
     enable() {
