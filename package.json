@@ -84,7 +84,7 @@
     "viewsWelcome": [
       {
         "view": "fs",
-        "contents": "You need to enable Lucid Workspace to view folders.\n[Enable](command:lucid-workspace.enable)",
+        "contents": "You need to enable Lucid Workspace to view folders.\nRemember to add folders to workspace before enabling.\n[Enable](command:lucid-workspace.enable)",
         "when": "lucid-workspace:state == activate"
       },
       {

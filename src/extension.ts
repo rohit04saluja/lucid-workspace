@@ -49,9 +49,30 @@ class LucidWorkspace {
     }
 
     enable() {
-        this.log.info(`Lucid Workspace is enabling now`);
-        this.fsManager?.enable();
-        this.setContext('enable');
+        if (!vscode.workspace.workspaceFolders
+            || vscode.workspace.workspaceFolders.length == 0) {
+            let opts: string[] = ['Add folder', 'Ok'];
+            vscode.window.showErrorMessage(`Lucid Workspace can not be
+                enabled. There are no folders added to Workspace. Please
+                add folder(s) to workspace and try again.`,
+                ...opts).then((value:string | undefined) => {
+
+                switch(value) {
+                    /** Execute command to add workspaceFolders */
+                    case opts[0]:
+                        vscode.commands.executeCommand(
+                            'workbench.action.addRootFolder'
+                        );
+                        break;
+                    default:
+                        break;
+                }
+            });
+        } else {
+            this.log.info(`Lucid Workspace is enabling now`);
+            this.fsManager?.enable();
+            this.setContext('enable');
+        }
     }
 
     disable() {
