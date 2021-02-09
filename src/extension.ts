@@ -50,13 +50,13 @@ class LucidWorkspace {
 
     enable() {
         this.log.info(`Lucid Workspace is enabling now`);
-        //this.fsManager?.enable();
+        this.fsManager?.enable();
         this.setContext('enable');
     }
 
     disable() {
         this.log.info('Lucid Workspace is diabling now');
-        //this.fsManager?.disable();
+        this.fsManager?.disable();
         this.setContext('activate');
     }
 

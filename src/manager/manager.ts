@@ -65,6 +65,14 @@ export class FsManager {
             })
     }
 
+    enable() {
+        this._enable = true;
+    }
+
+    disable() {
+        this._enable = false;
+    }
+
     public addWsFolders(folders:vscode.WorkspaceFolder[]) {
         this.logger.info(`Add ${folders.map(e => e.uri.fsPath)} to FS manager`);
         this.lock.acquire(
