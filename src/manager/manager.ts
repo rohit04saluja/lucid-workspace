@@ -13,16 +13,11 @@ export class FsManager {
     private lock = new AsyncLock();
     private _enable: boolean = false;
 
-    constructor(public context:vscode.ExtensionContext,
-                 wsFolders?:vscode.WorkspaceFolder[]) {
+    constructor(public context:vscode.ExtensionContext,) {
         this.logger.info('Initializing folder manager');
         let _d:vscode.Disposable;
         _d = vscode.window.registerTreeDataProvider('fs', this.fsp);
         this.context.subscriptions.push(_d);
-
-        if (wsFolders) {
-            this.addWsFolders(wsFolders);
-        }
 
         /** Register the commands */
         /** Register add to active command */
@@ -78,12 +73,8 @@ export class FsManager {
         this.context.subscriptions.push(_d);
     }
 
-    enable() {
-        this._enable = true;
-    }
-
-    disable() {
-        this._enable = false;
+    deactivate() {
+        this.logger.info('FsManager is being deactived')
     }
 
     public addWsFolders(folders:vscode.WorkspaceFolder[]) {

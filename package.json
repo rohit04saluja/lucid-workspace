@@ -40,44 +40,32 @@
   "contributes": {
     "commands": [
       {
-        "command": "lucid-workspace.enable",
-        "enablement": "lucid-workspace:state == activate || lucid-workspace:state == disable",
-        "title": "Lucid Workspace: Enable Lucid Workspace",
-        "icon": "$(play)"
-      },
-      {
-        "command": "lucid-workspace.disable",
-        "enablement": "lucid-workspace:state == enable",
-        "title": "Lucid Workspace: Disable Lucid Workspace",
-        "icon": "$(close)"
-      },
-      {
         "command": "lucid-workspace.add-to-active",
-        "enablement": "lucid-workspace:state == enable",
+        "enablement": "workspaceFolderCount > 0 && lucid-workspace:fs.root.length > 0",
         "title": "Add to active view",
         "icon": "$(add)"
       },
       {
         "command": "lucid-workspace.remove-from-active",
-        "enablement": "lucid-workspace:state == enable",
+        "enablement": "workspaceFolderCount > 0",
         "title": "Remove from active view",
         "icon": "$(remove)"
       },
       {
         "command": "lucid-workspace.add-ws-folders",
-        "enablement": "lucid-workspace:state == enable",
-        "title": "Lucid Workspace: Add Workspace Folder",
+        "enablement": "workspaceFolderCount > 0",
+        "title": "Add Workspace Folder",
         "icon": "$(add)"
       },
       {
         "command": "lucid-workspace.remove-ws-folders",
-        "enablement": "lucid-workspace:state == enable",
+        "enablement": "workspaceFolderCount > 0",
         "title": "Lucid Workspace: Remove Workspace Folder",
         "icon": "$(remove)"
       },
       {
         "command": "lucid-workspace.refresh-fs",
-        "enablement": "lucid-workspace:state == enable && lucid-workspace:fs.root.length > 0",
+        "enablement": "workspaceFolderCount > 0 && lucid-workspace:fs.root.length > 0",
         "title": "Refresh Tree View",
         "icon": "$(refresh)"
       }
@@ -96,45 +84,28 @@
     "viewsWelcome": [
       {
         "view": "fs",
-        "contents": "You need to enable Lucid Workspace to view folders.\nRemember to add folders to workspace before enabling.\n[Enable](command:lucid-workspace.enable)",
-        "when": "lucid-workspace:state == activate"
-      },
-      {
-        "view": "fs",
         "contents": "Add workspace folders to start managing them better.\n[Add Folder](command:lucid-workspace.add-ws-folders)",
-        "when": "lucid-workspace:state == enable"
+        "when": "workspaceFolderCount > 0"
       }
     ],
     "menus": {
       "view/title": [
         {
-          "command": "lucid-workspace.enable",
-          "title": "Enable",
-          "when": "lucid-workspace:state == activate && lucid-workspace:fs.root.length > 0",
-          "group": "navigation"
-        },
-        {
-          "command": "lucid-workspace.disable",
-          "title": "Disable",
-          "when": "lucid-workspace:state == enable",
-          "group": "navigation"
-        },
-        {
           "command": "lucid-workspace.add-ws-folders",
           "title": "Add",
-          "when": "lucid-workspace:state == enable && lucid-workspace:fs.root.length > 0",
+          "when": "lucid-workspace:fs.root.length > 0",
           "group": "navigation"
         },
         {
           "command": "lucid-workspace.remove-ws-folders",
           "title": "Remove",
-          "when": "lucid-workspace:state == enable && lucid-workspace:fs.root.length > 0",
+          "when": "lucid-workspace:fs.root.length > 0",
           "group": "navigation"
         },
         {
           "command": "lucid-workspace.refresh-fs",
           "title": "Refresh",
-          "when": "lucid-workspace:state == enable && lucid-workspace:fs.root.length > 0",
+          "when": "wlucid-workspace:fs.root.length > 0",
           "group": "navigation"
         }
       ],
@@ -151,7 +122,7 @@
       "explorer/context": [
         {
           "command": "lucid-workspace.remove-from-active",
-          "when": "lucid-workspace:state == enable",
+          "when": "workspaceFolderCount > 0",
           "group": "lucid-workspace"
         }
       ]
