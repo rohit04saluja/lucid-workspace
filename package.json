@@ -86,7 +86,10 @@
       "explorer": [
         {
           "id": "fs",
-          "name": "Lucid Workspace"
+          "name": "Lucid Workspace",
+          "type": "tree",
+          "icon": "_static/icon.svg",
+          "when": "workspaceFolderCount > 0"
         }
       ]
     },
