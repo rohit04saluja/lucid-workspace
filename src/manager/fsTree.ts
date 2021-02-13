@@ -3,6 +3,7 @@ import { lstatSync, readdirSync, realpathSync } from 'fs';
 import { join } from 'path';
 import * as vscode from 'vscode';
 import { getLogger, Logger } from '../logger';
+import { FsManager } from './manager';
 
 /**
  * Class for FsProvider
@@ -14,21 +15,16 @@ export class FsProvider implements vscode.TreeDataProvider<FsTreeItem> {
         this._onDidChangeTreeData.event;
 
     private logger:Logger = getLogger();
-    private root:FsTreeItem[] = [];
     private lock = new AsyncLock();
 
-    constructor(wsFolders?:vscode.WorkspaceFolder[]) {
+    constructor(private readonly manager: FsManager) {
         this.logger.info('Initializing fs tree provider');
-        if (wsFolders) {
-            this.addFolders(wsFolders);
-        }
-        this.updateContext();
 
-        vscode.commands.registerCommand(
-            'lucid-workspace.refresh-fs',
-            (node:FsTreeItem | undefined) => {
-                this.refresh(node);
-            }
+        this.manager.context.subscriptions.push(
+            vscode.commands.registerCommand(
+                'lucid-workspace.refresh-fs',
+                (node:FsTreeItem | undefined) => this.refresh(node)
+            )
         );
     }
 
@@ -46,36 +42,12 @@ export class FsProvider implements vscode.TreeDataProvider<FsTreeItem> {
                     .map(e => new FsTreeItem(vscode.Uri.parse(join(_path, e))));
             }
         } else {
-            items = this.root;
+            items = this.manager.wsFolders.map(e => new FsTreeItem(e.uri));
         }
         return Promise.resolve(items);
     }
 
-    async addFolders(folders:vscode.WorkspaceFolder[]) {
-        this.lock.acquire('root', () => this.root =
-            this.root.concat(folders.map(e => new FsTreeItem(e.uri)))
-        ).then(() => {
-            this.refresh(undefined);
-            this.updateContext();
-        });
-    }
-
-    async removeFolders(folders:vscode.WorkspaceFolder[]) {
-        let _match:string[] = folders.map(e => e.uri.fsPath);
-        this.lock.acquire('root', () => this.root = this.root.filter(
-            e => _match.includes(e.resourceUri.fsPath)?false:true
-        )).then(() => {
-            this.refresh(undefined);
-            this.updateContext()
-        });
-    }
-
-    private updateContext() {
-        vscode.commands.executeCommand('setContext',
-            'lucid-workspace:fs.root.length', this.root.length);
-    }
-
-    async refresh(item:FsTreeItem | undefined) {
+    async refresh(item?:FsTreeItem) {
         this._onDidChangeTreeData.fire(item);
     }
 }

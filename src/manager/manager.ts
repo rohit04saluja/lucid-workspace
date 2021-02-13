@@ -8,12 +8,12 @@ import { FsProvider } from './fsTree';
  */
 export class FsManager {
     private logger: Logger = getLogger();
-    private fsp:FsProvider = new FsProvider();
+    private fsp:FsProvider = new FsProvider(this);
     public wsFolders:vscode.WorkspaceFolder[] = [];
     private lock = new AsyncLock();
     private _enable: boolean = false;
 
-    constructor(private context:vscode.ExtensionContext,
+    constructor(public context:vscode.ExtensionContext,
                  wsFolders?:vscode.WorkspaceFolder[]) {
         this.logger.info('Initializing folder manager');
         let _d:vscode.Disposable;
@@ -91,8 +91,10 @@ export class FsManager {
         this.lock.acquire(
             'wsFolders',
             () => this.wsFolders = this.wsFolders.concat(folders)
-        );
-        this.fsp.addFolders(folders);
+        ).then(() => {
+            this.fsp.refresh();
+            this.updateContext();
+        });
     }
 
     public removeWsFolders(folders:vscode.WorkspaceFolder[]) {
@@ -101,8 +103,15 @@ export class FsManager {
         } from FS manager`);
         this.lock.acquire('wsFolders', () => 
             this.wsFolders = this.wsFolders.filter(e => !folders.includes(e))
-        );
-        this.fsp.removeFolders(folders);
+        ).then(() => {
+            this.fsp.refresh();
+            this.updateContext();
+        });
+    }
+
+    private async updateContext() {
+        vscode.commands.executeCommand('setContext',
+            'lucid-workspace:fs.root.length', this.wsFolders.length);
     }
 }
 
