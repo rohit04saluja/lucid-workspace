@@ -28,8 +28,17 @@ export class FsManager {
         /** Register add to active command */
         _d = vscode.commands.registerCommand(
             'lucid-workspace.add-to-active',
-            (files:vscode.Uri) => {
-                this.logger.info(`Add to active is called with ${files}`);
+            (file:vscode.Uri | undefined) => {
+                this.logger.info(`Add to active called with ${file}`);
+            }
+        );
+        this.context.subscriptions.push(_d);
+
+        /** Register add to active command */
+        _d = vscode.commands.registerCommand(
+            'lucid-workspace.remove-from-active',
+            (file:vscode.Uri | undefined) => {
+                this.logger.info(`Remove from active called with ${file}`);
             }
         );
         this.context.subscriptions.push(_d);
