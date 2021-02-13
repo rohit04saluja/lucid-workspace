@@ -30,7 +30,8 @@
       "declutter",
       "simplify",
       "manage",
-      "management"
+      "management",
+      "lucid"
   ],
   "activationEvents": [
     "*"
