@@ -144,6 +144,13 @@
           "command": "lucid-workspace.refresh-fs",
           "when": "view == fs"
         }
+      ],
+      "explorer/context": [
+        {
+          "command": "lucid-workspace.remove-from-active",
+          "when": "lucid-workspace:state == enable",
+          "group": "lucid-workspace"
+        }
       ]
     }
   },
