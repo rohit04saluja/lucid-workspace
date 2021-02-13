@@ -11,7 +11,7 @@ export class FsManager {
     private fsp:FsProvider = new FsProvider(this);
     public wsFolders:vscode.WorkspaceFolder[] = [];
     private lock = new AsyncLock();
-    private _enable: boolean = false;
+    public filter:vscode.Uri[] = [];
 
     constructor(public context:vscode.ExtensionContext,) {
         this.logger.info('Initializing folder manager');
@@ -25,6 +25,9 @@ export class FsManager {
             'lucid-workspace.add-to-active',
             (file:vscode.Uri | undefined) => {
                 this.logger.info(`Add to active called with ${file}`);
+                if (file) {
+                    this.addFilter([file]);
+                }
             }
         );
         this.context.subscriptions.push(_d);
@@ -34,6 +37,9 @@ export class FsManager {
             'lucid-workspace.remove-from-active',
             (file:vscode.Uri | undefined) => {
                 this.logger.info(`Remove from active called with ${file}`);
+                if (file) {
+                    this.removeFilter([file]);
+                }
             }
         );
         this.context.subscriptions.push(_d);
@@ -103,6 +109,21 @@ export class FsManager {
     private async updateContext() {
         vscode.commands.executeCommand('setContext',
             'lucid-workspace:fs.root.length', this.wsFolders.length);
+    }
+
+    public addFilter(files:vscode.Uri[]) {
+        this.logger.info(`Add filter for ${files.map(e => e.fsPath)}`);
+        this.lock.acquire('filter',
+            () => this.filter = this.filter.concat(files)
+        ).then(() => this.fsp.refresh());
+    }
+
+    public removeFilter(files:vscode.Uri[]) {
+        this.logger.info(`Remove filter for ${files.map(e => e.fsPath)}`);
+        let _match:string[] = files.map(e => e.fsPath);
+        this.lock.acquire('filter',
+            () => this.filter.filter(e => !_match.includes(e.fsPath))
+        ).then(() => this.fsp.refresh());
     }
 }
 

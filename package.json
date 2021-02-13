@@ -124,6 +124,11 @@
           "command": "lucid-workspace.remove-from-active",
           "when": "workspaceFolderCount > 0",
           "group": "lucid-workspace"
+        },
+        {
+          "command": "lucid-workspace.add-ws-folders",
+          "when": "workspaceFolderCount > 0 && viewItem == ",
+          "group": "lucid-workspace"
         }
       ]
     }
