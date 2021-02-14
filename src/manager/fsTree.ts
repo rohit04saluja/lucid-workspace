@@ -57,7 +57,9 @@ export class FsProvider implements vscode.TreeDataProvider<FsTreeItem> {
     private filter(path:string):boolean {
         const wsFolder = getWsFolderFromPath(path)?.uri.fsPath;
         if (wsFolder) {
-            return this.manager.filter[wsFolder].includes(path)
+            return this.manager.filter[wsFolder]
+                .map(e => join(wsFolder, e))
+                .includes(path);
         }
         return false;
     }
