@@ -110,7 +110,7 @@
         {
           "command": "lucid-workspace.refresh-fs",
           "title": "Refresh",
-          "when": "wlucid-workspace:fs.root.length > 0",
+          "when": "lucid-workspace:fs.root.length > 0",
           "group": "navigation"
         }
       ],
