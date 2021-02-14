@@ -3,7 +3,7 @@ import { lstatSync, readdirSync, realpathSync } from 'fs';
 import { join } from 'path';
 import * as vscode from 'vscode';
 import { getLogger, Logger } from '../logger';
-import { FsManager } from './manager';
+import { FsManager, getWsFolderFromPath } from './manager';
 
 /**
  * Class for FsProvider
@@ -38,8 +38,11 @@ export class FsProvider implements vscode.TreeDataProvider<FsTreeItem> {
             const _path:string = realpathSync(element.resourceUri.fsPath)
             if (lstatSync(_path).isDirectory()) {
                 items = readdirSync(_path)
-                    .filter(e => !e.startsWith('.'))
-                    .map(e => new FsTreeItem(vscode.Uri.parse(join(_path, e))));
+                    .filter(
+                        e => !e.startsWith('.') && !this.filter(join(_path, e))
+                    ).map(
+                        e => new FsTreeItem(vscode.Uri.parse(join(_path, e)))
+                    );
             }
         } else {
             items = this.manager.wsFolders.map(e => new FsTreeItem(e));
@@ -49,6 +52,14 @@ export class FsProvider implements vscode.TreeDataProvider<FsTreeItem> {
 
     async refresh(item?:FsTreeItem) {
         this._onDidChangeTreeData.fire(item);
+    }
+
+    private filter(path:string):boolean {
+        const wsFolder = getWsFolderFromPath(path)?.uri.fsPath;
+        if (wsFolder) {
+            return this.manager.filter[wsFolder].includes(path)
+        }
+        return false;
     }
 }
 
