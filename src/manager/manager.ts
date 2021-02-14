@@ -1,4 +1,5 @@
 import AsyncLock = require('async-lock');
+import { basename, dirname } from 'path';
 import * as vscode from 'vscode';
 import { Logger, getLogger } from '../logger' 
 import { FsProvider } from './fsTree';
@@ -9,7 +10,7 @@ import { FsProvider } from './fsTree';
 export class FsManager {
     private logger: Logger = getLogger();
     private fsp:FsProvider = new FsProvider(this);
-    public wsFolders:vscode.WorkspaceFolder[] = [];
+    public wsFolders:vscode.Uri[] = [];
     private lock = new AsyncLock();
     public filter:vscode.Uri[] = [];
 
@@ -47,7 +48,7 @@ export class FsManager {
         /** Register add ws folders command */
         _d = vscode.commands.registerCommand(
             'lucid-workspace.add-ws-folders',
-            (folders:vscode.WorkspaceFolder[] | undefined) => {
+            (folders:vscode.Uri[] | undefined) => {
                 this.logger.info(`Add ws folders called with ${folders}`);
                 if (folders == undefined || folders.length == 0) {
                     wsFoldersQuickPick(undefined, this.wsFolders).then(
@@ -64,7 +65,7 @@ export class FsManager {
         /** Register remove ws folders command */
         _d = vscode.commands.registerCommand(
             'lucid-workspace.remove-ws-folders',
-            (folders:vscode.WorkspaceFolder[] | undefined) => {
+            (folders:vscode.Uri[] | undefined) => {
                 this.logger.info(`Remove ws folderd called with ${folders}`);
                 if (folders == undefined || folders.length == 0) {
                     wsFoldersQuickPick(this.wsFolders).then(
@@ -83,20 +84,20 @@ export class FsManager {
         this.logger.info('FsManager is being deactived')
     }
 
-    public addWsFolders(folders:vscode.WorkspaceFolder[]) {
-        this.logger.info(`Add ${folders.map(e => e.uri.fsPath)} to FS manager`);
+    public addWsFolders(folders:vscode.Uri[]) {
+        this.logger.info(`Add ${folders.map(e => e.fsPath)} to FS manager`);
         this.lock.acquire(
             'wsFolders',
             () => this.wsFolders = this.wsFolders.concat(folders)
-        ).then(() => {
+            ).then(() => {
             this.fsp.refresh();
             this.updateContext();
         });
     }
 
-    public removeWsFolders(folders:vscode.WorkspaceFolder[]) {
+    public removeWsFolders(folders:vscode.Uri[]) {
         this.logger.info(`Remove ${
-            folders.map(e => e.uri.fsPath)
+            folders.map(e => e.fsPath)
         } from FS manager`);
         this.lock.acquire('wsFolders', () => 
             this.wsFolders = this.wsFolders.filter(e => !folders.includes(e))
@@ -137,24 +138,23 @@ export class FsManager {
  * Promises selected workspace folders 
  */
 export function wsFoldersQuickPick(
-    folders?:vscode.WorkspaceFolder[],
-    excludes?:vscode.WorkspaceFolder[])
-    :Promise<vscode.WorkspaceFolder[]> {
+    folders?:vscode.Uri[],
+    excludes?:vscode.Uri[])
+    :Promise<vscode.Uri[]> {
 
     if (!folders) {
         folders = vscode.workspace.workspaceFolders?
-            [...vscode.workspace.workspaceFolders]:[];
+            [...vscode.workspace.workspaceFolders.map(e => e.uri)]:[];
     }
-    let _filtered:vscode.WorkspaceFolder[] | undefined =
-        folders
-        ?.filter(e => excludes?!excludes.includes(e):true);
+    let _filtered:vscode.Uri[] | undefined =
+        folders.filter(e => excludes?!excludes.includes(e):true);
     if (_filtered) {
         if (_filtered.length > 1) {
-            return new Promise<vscode.WorkspaceFolder[]>((resolve, reject) => {
+            return new Promise<vscode.Uri[]>((resolve, reject) => {
                 if (_filtered) {
                     vscode.window.showQuickPick(_filtered
                         .map<vscode.QuickPickItem>(e => 
-                            ({ "label": e.name, "description": e.uri.fsPath })
+                            ({ "label": basename(e.fsPath), "description": dirname(e.fsPath) })
                     ), {
                         "canPickMany": true,
                         "placeHolder": "Select workspace folders"
@@ -162,7 +162,7 @@ export function wsFoldersQuickPick(
                         if (value && folders) {
                             resolve(folders
                                 .filter(e => value.map(e => e.description)
-                                    .includes(e.uri.fsPath)));
+                                    .includes(dirname(e.fsPath))));
                         }
                         reject();
                     });

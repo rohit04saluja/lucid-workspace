@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { getLogger } from './logger';
-import { FsManager, wsFoldersQuickPick } from './manager/manager';
+import { FsManager } from './manager/manager';
 
 let fsMan:FsManager;
 
