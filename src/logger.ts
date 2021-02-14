@@ -1,4 +1,4 @@
-import { extensions, OutputChannel, window } from "vscode";
+import { OutputChannel, window } from "vscode";
 
 /** Class for logging information */
 export class Logger {

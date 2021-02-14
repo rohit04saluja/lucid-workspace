@@ -2,7 +2,7 @@ import AsyncLock = require('async-lock');
 import { basename, dirname, join } from 'path';
 import * as vscode from 'vscode';
 import { Logger, getLogger } from '../logger' 
-import { FsProvider } from './fsTree';
+import { FsProvider, FsTreeItem } from './fsTree';
 
 /**
  * Class for Folder Manager
@@ -12,7 +12,7 @@ export class FsManager {
     private fsp:FsProvider = new FsProvider(this);
     public wsFolders:vscode.Uri[] = [];
     private lock = new AsyncLock();
-    public filter:vscode.Uri[] = [];
+    public filter:{ [wsFolder:string]: string[]} = {};
 
     constructor(public context:vscode.ExtensionContext,) {
         this.logger.info('Initializing folder manager');
@@ -24,10 +24,10 @@ export class FsManager {
         /** Register add to active command */
         _d = vscode.commands.registerCommand(
             'lucid-workspace.add-to-active',
-            (file:vscode.Uri | undefined) => {
+            (file:FsTreeItem | undefined) => {
                 this.logger.info(`Add to active called with ${file}`);
                 if (file) {
-                    this.addFilter([file]);
+                    this.addFilter([file.resourceUri]);
                 }
             }
         );
@@ -88,26 +88,42 @@ export class FsManager {
     }
 
     public addWsFolders(folders:vscode.Uri[]) {
-        this.logger.info(`Add ${folders.map(e => e.fsPath)} to FS manager`);
+        const _folders = folders.map(e => e.fsPath);
+        this.logger.info(`Add ${_folders.join(', ')} to FS manager`);
         this.lock.acquire(
             'wsFolders',
             () => this.wsFolders = this.wsFolders.concat(folders)
-            ).then(() => {
-            this.fsp.refresh();
-            this.updateContext();
+        ).then(() => {
+            this.lock.acquire('filter', () => {
+                for (const f of _folders) {
+                    this.filter[f] = [];
+                }
+            }).then(() => {
+                this.fsp.refresh();
+                this.updateContext();
+            });
         });
     }
 
     public removeWsFolders(folders:vscode.Uri[]) {
         const _folders:string[] = folders.map(e => e.fsPath);
         this.logger.info(`Remove ${_folders} from FS manager`);
-        this.lock.acquire('wsFolders', () => 
+        this.lock.acquire('wsFolders', () =>
             this.wsFolders = this.wsFolders.filter(
                 e => !_folders.includes(e.fsPath)
             )
         ).then(() => {
-            this.fsp.refresh();
-            this.updateContext();
+            this.lock.acquire('filter', () => {
+                for (const folder of _folders) {
+                    if (this.filter[folder]) {
+                        delete this.filter[folder];
+                    }
+                }
+            }).then(() => {
+                //TODO: Clear the excludes config for workspaceFolders
+                this.fsp.refresh();
+                this.updateContext();
+            });
         });
     }
 
@@ -117,18 +133,32 @@ export class FsManager {
     }
 
     public addFilter(files:vscode.Uri[]) {
-        this.logger.info(`Add filter for ${files.map(e => e.fsPath)}`);
-        this.lock.acquire('filter',
-            () => this.filter = this.filter.concat(files)
-        ).then(() => this.fsp.refresh());
+        const _files:string[] = files.map(e => e.fsPath)
+        const _wsFolders:string[] = this.wsFolders.map(e => e.fsPath);
+        this.logger.info(`Add filter for ${_files}`);
+        this.lock.acquire('filter', () => {
+            for (const file of _files) {
+                /** Get the workspace folder */
+                let _wsFolder = getWsFolderFromPath(file)?.uri.fsPath;
+                if (!_wsFolder || !_wsFolders.includes(_wsFolder)) {
+                    continue;
+                }
+                if (!this.filter[_wsFolder].includes(file)) {
+                    this.filter[_wsFolder].push(file);
+                }
+            }
+        }).then(() => this.fsp.refresh());
     }
 
     public removeFilter(files:vscode.Uri[]) {
         this.logger.info(`Remove filter for ${files.map(e => e.fsPath)}`);
         let _match:string[] = files.map(e => e.fsPath);
-        this.lock.acquire('filter',
-            () => this.filter.filter(e => !_match.includes(e.fsPath))
-        ).then(() => this.fsp.refresh());
+        this.lock.acquire('filter', () => {
+            const keys = Object.keys(this.filter);
+            for (const key of keys) {
+                this.filter[key].filter(e => !_match.includes(e));
+            }
+        }).then(() => this.fsp.refresh());
     }
 }
 
@@ -179,4 +209,14 @@ export function wsFoldersQuickPick(
         }
     }
     return Promise.reject();
+}
+
+export function getWsFolderFromPath(path:string):vscode.WorkspaceFolder | undefined {
+    if (vscode.workspace.workspaceFolders) {
+        for (const f of vscode.workspace.workspaceFolders) {
+            if (path.startsWith(f.uri.fsPath)) {
+                return f;
+            }
+        }
+    }
 }

@@ -55,7 +55,7 @@ export class FsProvider implements vscode.TreeDataProvider<FsTreeItem> {
 /**
  * Class for FsTreeItem
  */
-class FsTreeItem extends vscode.TreeItem {
+export class FsTreeItem extends vscode.TreeItem {
     constructor(public resourceUri:vscode.Uri) {
         super(resourceUri);
         const _lstat = lstatSync(this.resourceUri.fsPath);
