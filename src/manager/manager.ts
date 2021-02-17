@@ -146,7 +146,7 @@ export class FsManager {
         this.logger.info(`Remove filter for ${files.map(e => e.fsPath)}`);
         let _match:string[] = files.map(e => e.fsPath);
         this.lock.acquire('filter', () =>
-            this.filter.filter(e => !_match.includes(e))
+            this.filter = this.filter.filter(e => !_match.includes(e))
         ).then(() => {
             this.fsp.refresh();
             this.updateFilter();
