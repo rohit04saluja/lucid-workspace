@@ -13,7 +13,7 @@ export class FsManager {
     private fsp:FsProvider = new FsProvider(this);
     public wsFolders:vscode.Uri[] = [];
     private lock = new AsyncLock();
-    public filter:{ [wsFolder:string]: string[]} = {};
+    public filter:string[] = [];
 
     constructor(public context:vscode.ExtensionContext,) {
         this.logger.info('Initializing folder manager');
@@ -95,15 +95,9 @@ export class FsManager {
             'wsFolders',
             () => this.wsFolders = this.wsFolders.concat(folders)
         ).then(() => {
-            this.lock.acquire('filter', () => {
-                for (const f of _folders) {
-                    this.filter[f] = [];
-                }
-            }).then(() => {
-                this.fsp.refresh();
-                this.updateContext();
-                this.updateFilter();
-            });
+            this.fsp.refresh();
+            this.updateContext();
+            this.updateFilter();
         });
     }
 
@@ -117,9 +111,7 @@ export class FsManager {
         ).then(() => {
             this.lock.acquire('filter', () => {
                 for (const folder of _folders) {
-                    if (this.filter[folder]) {
-                        delete this.filter[folder];
-                    }
+                    this.filter.filter(e => !e.startsWith(folder));
                 }
             }).then(() => {
                 //TODO: Clear the excludes config for workspaceFolders
@@ -140,14 +132,8 @@ export class FsManager {
         this.logger.info(`Add filter for ${_files}`);
         this.lock.acquire('filter', () => {
             for (let file of _files) {
-                /** Get the workspace folder */
-                let _wsFolder = getWsFolderFromPath(file)?.uri.fsPath;
-                if (!_wsFolder || !_wsFolders.includes(_wsFolder)) {
-                    continue;
-                }
-                file = file.replace(_wsFolder + '/', '');
-                if (!this.filter[_wsFolder].includes(file)) {
-                    this.filter[_wsFolder].push(file);
+                if (!this.filter.includes(file)) {
+                    this.filter.push(file);
                 }
             }
         }).then(() => {
@@ -159,19 +145,16 @@ export class FsManager {
     public removeFilter(files:vscode.Uri[]) {
         this.logger.info(`Remove filter for ${files.map(e => e.fsPath)}`);
         let _match:string[] = files.map(e => e.fsPath);
-        this.lock.acquire('filter', () => {
-            const keys = Object.keys(this.filter);
-            for (const key of keys) {
-                this.filter[key].filter(e => !_match.includes(e));
-            }
-        }).then(() => {
+        this.lock.acquire('filter', () =>
+            this.filter.filter(e => !_match.includes(e))
+        ).then(() => {
             this.fsp.refresh();
             this.updateFilter();
         });
     }
 
     private async updateFilter() {
-        updateFileExcludes(this.filter);
+        updateFileExcludes(this.wsFolders, this.filter);
     }
 }
 

@@ -1,20 +1,20 @@
 import { join, resolve } from 'path';
 import * as vscode from 'vscode';
 
-export async function updateFileExcludes(files: { [id:string]: string[] }) {
+export async function updateFileExcludes(folders:vscode.Uri[], files:string[]) {
     let excludes: { [id:string]: vscode.FileType } = {};
     let fileExcludes: { [id:string]: boolean } = {};
     let watcherExcludes: { [id:string]: boolean } = {};
 
-    for (const root of Object.keys(files)) {
+    for (const root of folders) {
         Object.assign(excludes, await excludesBuilder(
-            vscode.Uri.parse(root), undefined, files[root]
+            root, undefined, files
         ));
 
         for (let key of Object.keys(excludes)) {
             let fType:vscode.FileType = excludes[key];
             fileExcludes[key] = true;
-            key = resolve(root, key);
+            key = resolve(root.fsPath, key);
             if (fType == vscode.FileType.Directory) {
                 watcherExcludes[join(key, '**')] = true;
             } else {
