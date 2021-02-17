@@ -35,6 +35,11 @@ async function excludesBuilder(
     folder:string | undefined,
     files:string[]
 ): Promise<{ [id:string]: vscode.FileType }> {
+    if (vscode.FileType.Directory != 
+        (await vscode.workspace.fs.stat(root)).type) {
+        return Promise.resolve({});
+    }
+
     let excludes: { [id:string]: vscode.FileType } = {};
 
     let items = await vscode.workspace.fs.readDirectory(root);
