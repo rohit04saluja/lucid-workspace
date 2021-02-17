@@ -8,7 +8,7 @@ export async function updateFileExcludes(folders:vscode.Uri[], files:string[]) {
 
     for (const root of folders) {
         Object.assign(excludes, await excludesBuilder(
-            root, undefined, files
+            root, '', files
         ));
 
         for (let key of Object.keys(excludes)) {
@@ -32,8 +32,8 @@ export async function updateFileExcludes(folders:vscode.Uri[], files:string[]) {
 
 async function excludesBuilder(
     root:vscode.Uri,
-    folder:string | undefined,
-    files:string[]
+    folder:string = '',
+    files:string[] = []
 ): Promise<{ [id:string]: vscode.FileType }> {
     if (vscode.FileType.Directory != 
         (await vscode.workspace.fs.stat(root)).type) {
@@ -42,19 +42,17 @@ async function excludesBuilder(
 
     let excludes: { [id:string]: vscode.FileType } = {};
 
-    let items = await vscode.workspace.fs.readDirectory(root);
+    let items = await vscode.workspace.fs.readDirectory(
+        vscode.Uri.file(join(root.fsPath, folder))
+    );
     if (items) {
         for (const item of items) {
-            let child:string;
-            if (folder) {
-                child = join(folder, item[0]);
-            } else {
-                child = item[0];
-            }
+            let child:string = join(folder, item[0]);
+            let childPath:string = join(root.fsPath, child);
             
-            if (!files.includes(join(child))) {
+            if (!files.includes(childPath)) {
                 let childInFiles: string[] = files.filter(
-                    e => e.startsWith(join(child))
+                    e => e.startsWith(childPath)
                 );
 
                 if (childInFiles.length == 0) {
@@ -63,7 +61,7 @@ async function excludesBuilder(
                     Object.assign(
                         excludes,
                         await excludesBuilder(
-                            vscode.Uri.parse(join(root.fsPath, item[0])),
+                            vscode.Uri.parse(join(root.fsPath)),
                             child, childInFiles
                         )
                     );
