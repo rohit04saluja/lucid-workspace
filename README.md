@@ -1,4 +1,4 @@
-# lucid-workspace README
+# 🗂 Lucid-workspace
 
 This is the README for your extension "lucid-workspace". After writing up a brief description, we recommend including the following sections.
 
