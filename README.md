@@ -32,7 +32,7 @@ When active, _lucid-workspace_ can be found at ```Explorer```.
 
 ## 📝 Release Notes
 
-See [CHANGELOG.md](CHAANGELOG.md) for detailed notes
+See [CHANGELOG.md](CHANGELOG.md) for detailed notes
 
 ---
 
