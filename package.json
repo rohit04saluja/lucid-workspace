@@ -38,6 +38,23 @@
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": [
+      {
+        "title": "Lucid Workspace",
+        "properties": {
+          "lucid-ws.folders": {
+            "type": "array",
+            "default": [],
+            "description": "All workspace folders part of Lucid Workspace"
+          },
+          "lucid-ws.filters": {
+            "type": "array",
+            "default": [],
+            "description": "Files/Folders to unhide from Explorer"
+          }
+        }
+      }
+    ],
     "commands": [
       {
         "command": "lucid-workspace.add-to-active",
