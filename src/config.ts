@@ -1,6 +1,12 @@
 import { join, resolve } from 'path';
 import * as vscode from 'vscode';
 
+export async function resetFilesExcludes() {
+    let config = vscode.workspace.getConfiguration('files');
+    config.update('exclude', {}, vscode.ConfigurationTarget.Workspace);
+    config.update('watcherExclude', {}, vscode.ConfigurationTarget.Workspace);
+}
+
 export async function updateFileExcludes(folders:vscode.Uri[], files:string[]) {
     let excludes: { [id:string]: vscode.FileType } = {};
     let fileExcludes: { [id:string]: boolean } = {};

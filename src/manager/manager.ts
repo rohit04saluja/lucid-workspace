@@ -3,7 +3,7 @@ import { basename, dirname, join } from 'path';
 import * as vscode from 'vscode';
 import { Logger, getLogger } from '../logger' 
 import { FsProvider, FsTreeItem } from './fsTree';
-import { updateFileExcludes } from '../config';
+import { resetFilesExcludes, updateFileExcludes } from '../config';
 
 /**
  * Class for Folder Manager
@@ -114,9 +114,9 @@ export class FsManager {
                     this.filter.filter(e => !e.startsWith(folder));
                 }
             }).then(() => {
-                //TODO: Clear the excludes config for workspaceFolders
                 this.fsp.refresh();
                 this.updateContext();
+                resetFilesExcludes().then(() => this.updateFilter());
             });
         });
     }
