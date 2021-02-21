@@ -9,9 +9,30 @@ Lucid workspace aims to help you declutter. It provides you with an intuitive wa
 
 ---
 
+## 🚀 Get started
+
+_lucid-workspace_ activates when there is an open workspace folder.
+
+When active, _lucid-workspace_ can be found at ```Explorer```.
+
+### Step 1 - _the welcome page_
+
+<table>
+    <tr>
+        <td><img src="_static/tree_view.png" /></td>
+        <td>
+            <p>This is the welcome screen.</p>
+            <p>Add <code>Workspace Folder</code> to see the tree view.</p>
+            <p>This hides the folder tree from Explorer, but can be viewed here</p>
+        </td>
+    </tr>
+</table>
+
+---
+
 ## 📝 Release Notes
 
-See CHANGELOG.md for detailed notes
+See [CHANGELOG.md](CHAANGELOG.md) for detailed notes
 
 ---
 
