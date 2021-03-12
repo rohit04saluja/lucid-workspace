@@ -4,7 +4,7 @@
 
 ## 🖋 Inspiration
 
-Getting lost while working with a large workspace is a real problem. It can get hard to find files and folders in the workspaces. Multiple open folder tress can eat up your explorer view space.
+Getting lost while working with a large workspace is a real problem. It can get hard to find files and folders of workspace in explorer view. Multiple open folder tress can eat up your explorer view space.
 Lucid workspace aims to help you declutter. It provides you with an intuitive way to only see what is important.
 
 ---
@@ -15,7 +15,7 @@ _lucid-workspace_ activates when there is an open workspace folder.
 
 When active, _lucid-workspace_ can be found at ```Explorer```.
 
-### Step 1 - _the welcome page_
+### 1 - _the welcome page_
 
 <table>
     <tr>
@@ -27,6 +27,70 @@ When active, _lucid-workspace_ can be found at ```Explorer```.
         </td>
     </tr>
 </table>
+
+### 2 - _add to active view_
+
+> _Active View_ refers to all the visible files in the ```Explorer```.
+
+<table>
+    <tr>
+        <td><img src="_static/add_to_active.png" /></td>
+        <td>
+            <p>Select files/folders from <code>Lucid Workspace</code> view</p>
+            <p>to add to <i>Active View</i>.</p>
+            <p>You should view the selected file/folder in <code>Explorer</code> view.</p>
+        </td>
+    </tr>
+</table>
+
+### 3 - _remove from active view_
+
+<table>
+    <tr>
+        <td><img src="_static/remove_from_active.png" /></td>
+        <td>
+            <p>Select the files/folders, added peviously from <code>Lucid Workspace</code> view,
+            <p>to remove form <code>Explorer</code> view.</p>
+        </td>
+    </tr>
+</table>
+
+### 4 - _buttons_
+
+<table>
+    <tr>
+        <td><img src="_static/buttons.png" /></td>
+        <td>
+            <ol>
+                <li>Button to add a workspace folder to <code>Lucid Workspace</code>.</li>
+                <li>Button to refresh <code>Lucid Workspace</code> view.</li>
+                <li>Button to remove folder from <code>Lucid Workspace</code>.</li>
+            </ol>
+        </td>
+    </tr>
+</table>
+
+---
+
+## Configurations
+
+1. `lucid-ws.folders`: All the workspaces folders added to _Lucid Workspace_
+
+2. `lucid-ws.filters`: All files/folders to unhide from _Explorer View_
+
+---
+
+## Commands
+
+1. `Add to active view`: Add a file/folder to active view.
+
+2. `Remove from active view`: Remove file/folder from active view.
+
+3. `Add Workspace Folder`: Add a workspace folder to _Lucid Workspace_
+
+4. `Remove Workspace Folder`: Remove a workspace folder from _Lucid Workspace_
+
+5. `Refresh Tree View`: Refresh the tree view of _Lucid Workspace_
 
 ---
 
