@@ -144,7 +144,7 @@
       "explorer/context": [
         {
           "command": "lucid-workspace.remove-from-active",
-          "when": "workspaceFolderCount > 0",
+          "when": "workspaceFolderCount > 0 && lucid-workspace:fs.root.length > 0",
           "group": "lucid-workspace"
         },
         {
