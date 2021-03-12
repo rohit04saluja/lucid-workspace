@@ -21,8 +21,7 @@ When active, _lucid-workspace_ can be found at ```Explorer```.
     <tr>
         <td><img src="_static/tree_view.png" /></td>
         <td>
-            <p>This is the welcome screen.</p>
-            <p>Add <code>Workspace Folder</code> to see the tree view.</p>
+            <p>This is the welcome screen. Add <code>Workspace Folder</code> to see the tree view.</p>
             <p>This hides the folder tree from Explorer, but can be viewed here</p>
         </td>
     </tr>
@@ -36,8 +35,7 @@ When active, _lucid-workspace_ can be found at ```Explorer```.
     <tr>
         <td><img src="_static/add_to_active.png" /></td>
         <td>
-            <p>Select files/folders from <code>Lucid Workspace</code> view</p>
-            <p>to add to <i>Active View</i>.</p>
+            <p>Select files/folders from <code>Lucid Workspace</code> view to add to <i>Active View</i>.</p>
             <p>You should view the selected file/folder in <code>Explorer</code> view.</p>
         </td>
     </tr>
@@ -49,8 +47,7 @@ When active, _lucid-workspace_ can be found at ```Explorer```.
     <tr>
         <td><img src="_static/remove_from_active.png" /></td>
         <td>
-            <p>Select the files/folders, added peviously from <code>Lucid Workspace</code> view,
-            <p>to remove form <code>Explorer</code> view.</p>
+            <p>Select the files/folders, added peviously from <code>Lucid Workspace</code> view, to remove form <code>Explorer</code> view.</p>
         </td>
     </tr>
 </table>
