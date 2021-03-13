@@ -1,25 +1,159 @@
 {
-  "name": "workspaces",
-  "displayName": "Workspaces",
-  "description": "Extension to manage large workspaces",
-  "version": "0.0.1",
+  "name": "lucid-workspace",
+  "displayName": "Lucid Workspace",
+  "description": "An extension to manage large workspaces",
+  "version": "1.0.0",
+  "homepage": "https://github.com/rohit04saluja/lucid-workspace",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rohit04saluja/lucid-workspace"
+  },
+  "bugs": {
+    "url": "https://github.com/rohit04saluja/lucid-workspace/issues"
+  },
+  "author": "rohit04saluja",
+  "publisher": "rohit04saluja",
+  "icon": "_static/icon.png",
   "engines": {
     "vscode": "^1.52.0"
   },
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "rohit saluja",
+    "rohit",
+    "workspace",
+    "organizer",
+    "dejunk",
+    "whitelist",
+    "declutter",
+    "simplify",
+    "manage",
+    "management",
+    "lucid"
+  ],
   "activationEvents": [
-    "onCommand:workspaces.helloWorld"
+    "*"
   ],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": [
+      {
+        "title": "Lucid Workspace",
+        "properties": {
+          "lucid-ws.folders": {
+            "type": "array",
+            "default": [],
+            "description": "All workspace folders part of Lucid Workspace"
+          },
+          "lucid-ws.filters": {
+            "type": "array",
+            "default": [],
+            "description": "Files/Folders to unhide from Explorer"
+          }
+        }
+      }
+    ],
     "commands": [
       {
-        "command": "workspaces.helloWorld",
-        "title": "Hello World"
+        "command": "lucid-workspace.add-to-active",
+        "enablement": "workspaceFolderCount > 0 && lucid-workspace:fs.root.length > 0",
+        "title": "Add to active view",
+        "icon": "$(add)",
+        "category": "Lucid Workspace"
+      },
+      {
+        "command": "lucid-workspace.remove-from-active",
+        "enablement": "workspaceFolderCount > 0",
+        "title": "Remove from active view",
+        "icon": "$(remove)",
+        "category": "Lucid Workspace"
+      },
+      {
+        "command": "lucid-workspace.add-ws-folders",
+        "enablement": "workspaceFolderCount > 0",
+        "title": "Add Workspace Folder",
+        "icon": "$(add)",
+        "category": "Lucid Workspace"
+      },
+      {
+        "command": "lucid-workspace.remove-ws-folders",
+        "enablement": "workspaceFolderCount > 0",
+        "title": "Remove Workspace Folder",
+        "icon": "$(remove)",
+        "category": "Lucid Workspace"
+      },
+      {
+        "command": "lucid-workspace.refresh-fs",
+        "enablement": "workspaceFolderCount > 0 && lucid-workspace:fs.root.length > 0",
+        "title": "Refresh Tree View",
+        "icon": "$(refresh)",
+        "category": "Lucid Workspace"
       }
-    ]
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "fs",
+          "name": "Lucid Workspace",
+          "type": "tree",
+          "icon": "_static/icon.svg",
+          "when": "workspaceFolderCount > 0"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "fs",
+        "contents": "Add workspace folders to start managing them better.\n[Add Folder](command:lucid-workspace.add-ws-folders)",
+        "when": "workspaceFolderCount > 0"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "lucid-workspace.add-ws-folders",
+          "title": "Add",
+          "when": "lucid-workspace:fs.root.length > 0",
+          "group": "navigation"
+        },
+        {
+          "command": "lucid-workspace.remove-ws-folders",
+          "title": "Remove",
+          "when": "lucid-workspace:fs.root.length > 0",
+          "group": "navigation"
+        },
+        {
+          "command": "lucid-workspace.refresh-fs",
+          "title": "Refresh",
+          "when": "lucid-workspace:fs.root.length > 0",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "lucid-workspace.add-to-active",
+          "when": "view == fs"
+        },
+        {
+          "command": "lucid-workspace.refresh-fs",
+          "when": "view == fs"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "lucid-workspace.remove-from-active",
+          "when": "workspaceFolderCount > 0 && lucid-workspace:fs.root.length > 0",
+          "group": "lucid-workspace"
+        },
+        {
+          "command": "lucid-workspace.add-ws-folders",
+          "when": "workspaceFolderCount > 0 && viewItem == ",
+          "group": "lucid-workspace"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -30,12 +164,14 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
+    "@types/async-lock": "^1.1.2",
     "@types/glob": "^7.1.3",
     "@types/mocha": "^8.0.0",
     "@types/node": "^12.11.7",
     "@types/vscode": "^1.52.0",
     "@typescript-eslint/eslint-plugin": "^4.1.1",
     "@typescript-eslint/parser": "^4.1.1",
+    "async-lock": "^1.2.8",
     "eslint": "^7.9.0",
     "glob": "^7.1.6",
     "mocha": "^8.1.3",

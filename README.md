@@ -1,65 +1,108 @@
-# workspaces README
+# 🗂 Lucid-workspace
 
-This is the README for your extension "workspaces". After writing up a brief description, we recommend including the following sections.
+> An extension to seemlessly manage large workspaces
 
-## Features
+## 🖋 Inspiration
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+Getting lost while working with a large workspace is a real problem. It can get hard to find files and folders of workspace in explorer view. Multiple open folder tress can eat up your explorer view space.
+Lucid workspace aims to help you declutter. It provides you with an intuitive way to only see what is important.
 
-For example if there is an image subfolder under your extension project workspace:
+---
 
-\!\[feature X\]\(images/feature-x.png\)
+## 🚀 Get started
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+_lucid-workspace_ activates when there is an open workspace folder.
 
-## Requirements
+When active, _lucid-workspace_ can be found at ```Explorer```.
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+### 1 - _the welcome page_
 
-## Extension Settings
+<table>
+    <tr>
+        <td><img src="_static/tree_view.png" /></td>
+        <td>
+            <p>This is the welcome screen. Add <code>Workspace Folder</code> to see the tree view.</p>
+            <p>This hides the folder tree from Explorer, but can be viewed here</p>
+        </td>
+    </tr>
+</table>
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+### 2 - _add to active view_
 
-For example:
+> _Active View_ refers to all the visible files in the ```Explorer```.
 
-This extension contributes the following settings:
+<table>
+    <tr>
+        <td><img src="_static/add_to_active.png" /></td>
+        <td>
+            <p>Select files/folders from <code>Lucid Workspace</code> view to add to <i>Active View</i>.</p>
+            <p>You should view the selected file/folder in <code>Explorer</code> view.</p>
+        </td>
+    </tr>
+</table>
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
+### 3 - _remove from active view_
 
-## Known Issues
+<table>
+    <tr>
+        <td><img src="_static/remove_from_active.png" /></td>
+        <td>
+            <p>Select the files/folders, added peviously from <code>Lucid Workspace</code> view, to remove form <code>Explorer</code> view.</p>
+        </td>
+    </tr>
+</table>
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+### 4 - _buttons_
 
-## Release Notes
+<table>
+    <tr>
+        <td><img src="_static/buttons.png" /></td>
+        <td>
+            <ol>
+                <li>Button to add a workspace folder to <code>Lucid Workspace</code>.</li>
+                <li>Button to refresh <code>Lucid Workspace</code> view.</li>
+                <li>Button to remove folder from <code>Lucid Workspace</code>.</li>
+            </ol>
+        </td>
+    </tr>
+</table>
 
-Users appreciate release notes as you update your extension.
+---
 
-### 1.0.0
+## Configurations
 
-Initial release of ...
+1. `lucid-ws.folders`: All the workspaces folders added to _Lucid Workspace_
 
-### 1.0.1
+2. `lucid-ws.filters`: All files/folders to unhide from _Explorer View_
 
-Fixed issue #.
+---
 
-### 1.1.0
+## Commands
 
-Added features X, Y, and Z.
+1. `Add to active view`: Add a file/folder to active view.
 
------------------------------------------------------------------------------------------------------------
+2. `Remove from active view`: Remove file/folder from active view.
 
-## Working with Markdown
+3. `Add Workspace Folder`: Add a workspace folder to _Lucid Workspace_
 
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
+4. `Remove Workspace Folder`: Remove a workspace folder from _Lucid Workspace_
 
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
+5. `Refresh Tree View`: Refresh the tree view of _Lucid Workspace_
 
-### For more information
+---
 
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
+## 📝 Release Notes
 
-**Enjoy!**
+See [CHANGELOG.md](CHANGELOG.md) for detailed notes
+
+---
+
+## 🎗 Support
+
+Found a bug or need a new feature? Post it in the <a href="https://github.com/rohit04saluja/lucid-workspace/issues">issue tracker</a>.
+
+---
+
+## 👨🏽‍💻 Contributors
+
+Created by Rohit Saluja (<a href="https://github.com/rohit04saluja/">rohit04saluja</a>)
