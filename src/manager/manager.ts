@@ -59,7 +59,7 @@ export class FsManager {
                     );
                     if (val == 'Yes') overwrite = true;
                     else return Promise.resolve();
-                } else if (overwrite == undefined) overwrite = true;
+                } else overwrite = true;
 
                 if (
                     (
@@ -71,18 +71,21 @@ export class FsManager {
                         this.logger.info(`Add ${folder} to lucid`);
                         /** Check if this folder exists in workspace folders */
                         if (getWsFolder(folder.fsPath)) {
-                            return this.addWsFolder(folder);
+                            this.addWsFolder(folder);
                         } else {
                             vscode.window.showErrorMessage(
                                 `${folder} is not a workspace folder. Open folder in vscode to add to Lucid`
                             );
-                            return Promise.reject(`${folder} is not a workspace folder`);
+                            return Promise.reject(
+                                `${folder} is not a workspace folder`
+                            );
                         }
                     } else {
-                        const item = vscode.workspace.workspaceFolders.map<vscode.QuickPickItem>(e => ({
-                            "label": basename(e.uri.fsPath),
-                            "description": dirname(e.uri.fsPath)
-                        }));
+                        const item = vscode.workspace.workspaceFolders
+                            .map<vscode.QuickPickItem>(e => ({
+                                "label": basename(e.uri.fsPath),
+                                "description": dirname(e.uri.fsPath)
+                            }));
                         if (item.length > 1) {
                             const val = await vscode.window.showQuickPick(
                                 vscode.workspace.workspaceFolders
@@ -94,18 +97,19 @@ export class FsManager {
                                     }
                             );
                             if (val) {
-                                return this.addWsFolder(vscode.Uri.parse(join(
-                                    val.description? val.description: '', val.label
+                                this.addWsFolder(vscode.Uri.parse(join(
+                                    val.description? val.description: '',
+                                    val.label
                                 )));
                             }
                         } else {
-                            return this.addWsFolder(vscode.Uri.parse(join(
+                            this.addWsFolder(vscode.Uri.parse(join(
                                 item[0].description? item[0].description: '',
                                 item[0].label
                             )));
                         }
-                        return Promise.resolve();
                     }
+                    return Promise.resolve();
                 }
                 return Promise.reject();
             }
@@ -128,7 +132,7 @@ export class FsManager {
         this.removeWsFolder();
     }
 
-    public async addWsFolder(folder:vscode.Uri): Promise<void> {
+    public addWsFolder(folder:vscode.Uri): Promise<void> {
         this.logger.info(`Add ${folder} to FS manager`);
         this.wsFolder = folder;
         this.saveFolders();
