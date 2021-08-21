@@ -34,7 +34,7 @@
     "lucid"
   ],
   "activationEvents": [
-    "*"
+    "workspaceContains:**"
   ],
   "main": "./out/extension.js",
   "contributes": {
