@@ -42,10 +42,9 @@
       {
         "title": "Lucid Workspace",
         "properties": {
-          "lucid-ws.folders": {
-            "type": "array",
-            "default": [],
-            "description": "All workspace folders part of Lucid Workspace"
+          "lucid-ws.folder": {
+            "type": "string",
+            "description": "Workspace folder part of Lucid Workspace"
           },
           "lucid-ws.filters": {
             "type": "array",
