@@ -198,7 +198,8 @@ export class FsManager {
  * @brief
  * wsFoldersQuickPick
  *
- * @param excludes 
+ * @param folders Folders to pick from. Defaults to workspace folder
+ * @param excludes Paths to exclude
  *
  * @return
  * Promises selected workspace folders 
