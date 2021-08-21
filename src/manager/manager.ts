@@ -206,7 +206,7 @@ export class FsManager {
     private async loadState() {
         let config = vscode.workspace.getConfiguration('lucid-ws');
 
-        let folder = config.get<string>('folders');
+        let folder = config.get<string>('folder');
         if (folder) this.wsFolder = vscode.Uri.file(folder);
 
         let filters = config.get<string[]>('filters');
