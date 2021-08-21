@@ -44,7 +44,7 @@ export class FsProvider implements vscode.TreeDataProvider<FsTreeItem> {
         const _path:string = realpathSync(element.resourceUri.fsPath)
         if (lstatSync(_path).isDirectory()) {
             items = readdirSync(_path).filter(
-                e => !this.manager.filter.has(join(_path, e))
+                e => !this.manager.filters.has(join(_path, e))
             ).map(
                 e => new FsTreeItem(vscode.Uri.parse(join(_path, e)))
             );

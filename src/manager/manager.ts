@@ -11,13 +11,13 @@ export class FsManager {
     private logger: Logger = getLogger();
     private fsp:FsProvider = new FsProvider(this);
     public wsFolder: vscode.Uri | undefined;
-    public filter:Set<string> = new Set();
+    public filters: Set<string> = new Set();
 
     constructor(public context:vscode.ExtensionContext,) {
         this.logger.info('Initializing folder manager');
         this.loadState();
         this.updateContext();
-        this.updateFilter();
+        this.updateFilters();
 
         let _d:vscode.Disposable;
         _d = vscode.window.registerTreeDataProvider('fs', this.fsp);
@@ -30,7 +30,7 @@ export class FsManager {
             (file:FsTreeItem | undefined) => {
                 this.logger.info(`Add to active called with ${file}`);
                 if (file) {
-                    this.addFilter([file.resourceUri]);
+                    this.addFilters([file.resourceUri.fsPath]);
                 }
             }
         );
@@ -42,7 +42,7 @@ export class FsManager {
             (file:vscode.Uri | undefined) => {
                 this.logger.info(`Remove from active called with ${file}`);
                 if (file) {
-                    this.removeFilter([file]);
+                    this.removeFilters([file.fsPath]);
                 }
             }
         );
@@ -134,7 +134,7 @@ export class FsManager {
         this.saveFolders();
         this.fsp.refresh();
         this.updateContext();
-        this.updateFilter();
+        this.updateFilters();
         return Promise.resolve();
     }
 
@@ -143,12 +143,12 @@ export class FsManager {
         this.saveFolders();
 
         /** Filter out paths of removed folders */
-        this.filter.clear();
+        this.filters.clear();
         this.saveFilters();
 
         this.fsp.refresh();
         this.updateContext();
-        resetFilesExcludes().then(() => this.updateFilter());
+        resetFilesExcludes();
     }
 
     private async updateContext() {
@@ -156,32 +156,35 @@ export class FsManager {
             'lucid-workspace:fs.hasRoot', this.wsFolder? true: false);
     }
 
-    public addFilter(files:vscode.Uri[]) {
-        const _files:string[] = files.map(e => e.fsPath)
-        this.logger.info(`Add filter for ${_files}`);
-        for (const file of _files) this.filter.add(file);
+    public addFilters(files: string[]) {
+        this.logger.info(`Add ${files} to active`);
+    
+        for (const file of files) this.filters.add(file);
         this.saveFilters();
+
         this.fsp.refresh();
-        this.updateFilter();
+        this.updateFilters();
     }
 
-    public removeFilter(files?:vscode.Uri[]) {
+    public removeFilters(files?: string[]) {
+        let _files: string[] = [];
         if (files) {
-            this.logger.info(`Remove filter for ${files.map(e => e.fsPath)}`);
-            for (const f of files) this.filter.delete(f.fsPath);
+            this.logger.info(`Remove ${files} from active`);
+            for (const file of files) this.filters.delete(file);
         } else {
             this.logger.info(`Remove all filters`);
-            this.filter.clear();
+            this.filters.clear();
         }
-
         this.saveFilters();
+
         this.fsp.refresh();
-        this.updateFilter();
+        if (!files) resetFilesExcludes();
+        else this.updateFilters();
     }
 
-    private async updateFilter() {
+    private async updateFilters() {
         if (this.wsFolder) {
-            updateFileExcludes(this.wsFolder, Array.from(this.filter));
+            updateFileExcludes(this.wsFolder, Array.from(this.filters));
         }
     }
 
@@ -192,17 +195,18 @@ export class FsManager {
     }
 
     private async saveFilters() {
-        let config = vscode.workspace.getConfiguration('lucid-ws');
-        config.update('filters', this.filter);
+        vscode.workspace.getConfiguration('lucid-ws')
+            .update('keep', Array.from(this.filters));
     }
 
     private async loadState() {
         let config = vscode.workspace.getConfiguration('lucid-ws');
+
         let folder = config.get<string>('folders');
         if (folder) this.wsFolder = vscode.Uri.file(folder);
 
         let filters = config.get<string[]>('filters');
-        if (filters) this.filter = new Set(filters);
+        if (filters) this.filters = new Set(filters);
     }
 }
 
