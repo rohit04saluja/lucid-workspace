@@ -98,16 +98,14 @@
           "id": "fs",
           "name": "Lucid Workspace",
           "type": "tree",
-          "icon": "_static/icon.svg",
-          "when": "workspaceFolderCount > 0"
+          "icon": "_static/icon.svg"
         }
       ]
     },
     "viewsWelcome": [
       {
         "view": "fs",
-        "contents": "Add workspace folders to start managing them better.\n[Add Folder](command:lucid-workspace.add-ws-folders)",
-        "when": "workspaceFolderCount > 0"
+        "contents": "Add workspace folders to start managing them better.\n[Add Folder](command:lucid-workspace.add-ws-folders)"
       }
     ],
     "menus": {
