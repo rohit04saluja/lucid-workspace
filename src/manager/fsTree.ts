@@ -32,19 +32,22 @@ export class FsProvider implements vscode.TreeDataProvider<FsTreeItem> {
 
     async getChildren(element?:FsTreeItem):Promise<FsTreeItem[]> {
         let items:FsTreeItem[] = [];
-        if (element) {
-            const _path:string = realpathSync(element.resourceUri.fsPath)
-            if (lstatSync(_path).isDirectory()) {
-                items = readdirSync(_path)
-                    .filter(
-                        e => !this.manager.filter.has(join(_path, e))
-                    ).map(
-                        e => new FsTreeItem(vscode.Uri.parse(join(_path, e)))
-                    );
+
+        if (!element) {
+            if (this.manager.wsFolder) {
+                element = new FsTreeItem(this.manager.wsFolder);
+            } else {
+                return Promise.reject();
             }
-        } else {
-            items = Array.from(this.manager.wsFolders)
-                .map(e => new FsTreeItem(e));
+        }
+
+        const _path:string = realpathSync(element.resourceUri.fsPath)
+        if (lstatSync(_path).isDirectory()) {
+            items = readdirSync(_path).filter(
+                e => !this.manager.filter.has(join(_path, e))
+            ).map(
+                e => new FsTreeItem(vscode.Uri.parse(join(_path, e)))
+            );
         }
         return Promise.resolve(items);
     }

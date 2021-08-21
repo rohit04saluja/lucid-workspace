@@ -57,14 +57,14 @@
     "commands": [
       {
         "command": "lucid-workspace.add-to-active",
-        "enablement": "workspaceFolderCount == 1 && lucid-workspace:fs.root.length > 0",
+        "enablement": "workspaceFolderCount == 1 && lucid-workspace:fs.hasRoot == true",
         "title": "Add to active view",
         "icon": "$(add)",
         "category": "Lucid Workspace"
       },
       {
         "command": "lucid-workspace.remove-from-active",
-        "enablement": "workspaceFolderCount == 1 && lucid-workspace:fs.root.length > 0",
+        "enablement": "workspaceFolderCount == 1 && lucid-workspace:fs.hasRoot == true",
         "title": "Remove from active view",
         "icon": "$(remove)",
         "category": "Lucid Workspace"
@@ -85,7 +85,7 @@
       },
       {
         "command": "lucid-workspace.refresh-fs",
-        "enablement": "workspaceFolderCount == 1 && lucid-workspace:fs.root.length > 0",
+        "enablement": "workspaceFolderCount == 1 && lucid-workspace:fs.hasRoot == true",
         "title": "Refresh Tree View",
         "icon": "$(refresh)",
         "category": "Lucid Workspace"
@@ -113,19 +113,19 @@
         {
           "command": "lucid-workspace.add-ws-folders",
           "title": "Add",
-          "when": "lucid-workspace:fs.root.length > 0",
+          "when": "lucid-workspace:fs.hasRoot == true",
           "group": "navigation"
         },
         {
           "command": "lucid-workspace.remove-ws-folders",
           "title": "Remove",
-          "when": "lucid-workspace:fs.root.length > 0",
+          "when": "lucid-workspace:fs.hasRoot == true",
           "group": "navigation"
         },
         {
           "command": "lucid-workspace.refresh-fs",
           "title": "Refresh",
-          "when": "lucid-workspace:fs.root.length > 0",
+          "when": "lucid-workspace:fs.hasRoot == true",
           "group": "navigation"
         }
       ],
@@ -142,7 +142,7 @@
       "explorer/context": [
         {
           "command": "lucid-workspace.remove-from-active",
-          "when": "workspaceFolderCount == 1 && lucid-workspace:fs.root.length > 0",
+          "when": "workspaceFolderCount == 1 && lucid-workspace:fs.hasRoot == true",
           "group": "lucid-workspace"
         },
         {

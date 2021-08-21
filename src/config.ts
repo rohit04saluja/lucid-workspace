@@ -7,25 +7,23 @@ export async function resetFilesExcludes() {
     config.update('watcherExclude', {}, vscode.ConfigurationTarget.Workspace);
 }
 
-export async function updateFileExcludes(folders:vscode.Uri[], files:string[]) {
+export async function updateFileExcludes(root:vscode.Uri, files:string[]) {
     let excludes: { [id:string]: vscode.FileType } = {};
     let fileExcludes: { [id:string]: boolean } = {};
     let watcherExcludes: { [id:string]: boolean } = {};
 
-    for (const root of folders) {
-        Object.assign(excludes, await excludesBuilder(
-            root, '', files
-        ));
+    Object.assign(excludes, await excludesBuilder(
+        root, '', files
+    ));
 
-        for (let key of Object.keys(excludes)) {
-            let fType:vscode.FileType = excludes[key];
-            fileExcludes[key] = true;
-            key = resolve(root.fsPath, key);
-            if (fType == vscode.FileType.Directory) {
-                watcherExcludes[join(key, '**')] = true;
-            } else {
-                watcherExcludes[key] = true;
-            }
+    for (let key of Object.keys(excludes)) {
+        let fType:vscode.FileType = excludes[key];
+        fileExcludes[key] = true;
+        key = resolve(root.fsPath, key);
+        if (fType == vscode.FileType.Directory) {
+            watcherExcludes[join(key, '**')] = true;
+        } else {
+            watcherExcludes[key] = true;
         }
     }
 
