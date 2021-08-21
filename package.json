@@ -65,7 +65,7 @@
       },
       {
         "command": "lucid-workspace.remove-from-active",
-        "enablement": "workspaceFolderCount > 0",
+        "enablement": "workspaceFolderCount > 0 && lucid-workspace:fs.root.length > 0",
         "title": "Remove from active view",
         "icon": "$(remove)",
         "category": "Lucid Workspace"
