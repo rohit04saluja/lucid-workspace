@@ -7,6 +7,9 @@ let fsMan:FsManager;
 /** this method is called when your extension is activated */
 export function activate(context: vscode.ExtensionContext) {
     getLogger().info('Lucid workspace is activated');
+    vscode.commands.executeCommand(
+        'setContext', 'lucid-workspace:state', 'active'
+    );
     fsMan = new FsManager(context);
 }
 

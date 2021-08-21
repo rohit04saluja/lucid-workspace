@@ -34,7 +34,7 @@
     "lucid"
   ],
   "activationEvents": [
-    "workspaceContains:**"
+    "*"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -105,7 +105,8 @@
     "viewsWelcome": [
       {
         "view": "fs",
-        "contents": "Add workspace folders to start managing them better.\n[Add Folder](command:lucid-workspace.add-ws-folders)"
+        "contents": "Add workspace folders to start managing them better.\n[Add Folder](command:lucid-workspace.add-ws-folders)",
+        "enablement": "lucid-workspace:state == active"
       }
     ],
     "menus": {
