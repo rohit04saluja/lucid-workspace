@@ -10,13 +10,13 @@ import { resetFilesExcludes, updateFileExcludes } from '../config';
 export class FsManager {
     private logger: Logger = getLogger();
     private fsp:FsProvider = new FsProvider(this);
-    public wsFolders:vscode.Uri[] = [];
+    public wsFolders:Set<vscode.Uri> = new Set();
     public filter:Set<string> = new Set();
 
     constructor(public context:vscode.ExtensionContext,) {
         this.logger.info('Initializing folder manager');
         this.loadState();
-        if (this.wsFolders.length > 0) {
+        if (this.wsFolders.size > 0) {
             this.updateContext();
             this.updateFilter();
         }
@@ -57,7 +57,7 @@ export class FsManager {
                 this.logger.info(`Add ws folders called with ${folders}`);
                 if (folders == undefined || folders.length == 0) {
                     wsFoldersQuickPick(
-                        undefined, this.wsFolders.map(e => e.fsPath)
+                        undefined, Array.from(this.wsFolders).map(e => e.fsPath)
                     ).then(
                         (value) => this.addWsFolders(value),
                         () => this.logger.warn('No folders selected')
@@ -73,7 +73,7 @@ export class FsManager {
             (folders:vscode.Uri[] | undefined) => {
                 this.logger.info(`Remove ws folderd called with ${folders}`);
                 if (folders == undefined || folders.length == 0) {
-                    wsFoldersQuickPick(this.wsFolders).then(
+                    wsFoldersQuickPick(Array.from(this.wsFolders)).then(
                         (value) => this.removeWsFolders(value),
                         () => this.logger.warn('No folders selected')
                     );
@@ -87,13 +87,13 @@ export class FsManager {
 
     deactivate() {
         this.logger.info('FsManager is being deactived');
-        this.removeWsFolders(this.wsFolders);
+        this.removeWsFolders();
     }
 
     public async addWsFolders(folders:vscode.Uri[]): Promise<void> {
         const _folders = folders.map(e => e.fsPath);
         this.logger.info(`Add ${_folders.join(', ')} to FS manager`);
-        this.wsFolders = this.wsFolders.concat(folders)
+        for (const f of folders) this.wsFolders.add(f);
         this.saveFolders();
         this.fsp.refresh();
         this.updateContext();
@@ -101,22 +101,24 @@ export class FsManager {
         return Promise.resolve();
     }
 
-    public removeWsFolders(folders:vscode.Uri[]) {
-        const _folders:string[] = folders.map(e => e.fsPath);
-        this.logger.info(`Remove ${_folders} from FS manager`);
-        this.wsFolders = this.wsFolders.filter(
-            e => !_folders.includes(e.fsPath)
-        );
+    public removeWsFolders(folders?:vscode.Uri[]) {
+        if (folders) {
+            const _folders:string[] = folders.map(e => e.fsPath);
+            this.logger.info(`Remove ${_folders} from FS manager`);
+            for (const f of folders) this.wsFolders.delete(f);
+        } else this.wsFolders.clear();
         this.saveFolders();
 
+        if (folders) {
         /** Filter out paths of removed folders */
         let _filter = Array.from(this.filter.values());
-        for (const folder of _folders) {
-            _filter = _filter.filter(e => !e.startsWith(folder));
+        for (const f of folders.map(e => e.fsPath)) {
+            _filter = _filter.filter(e => !e.startsWith(f));
         }
         this.filter = new Set(_filter);
-
+        } else this.filter.clear();
         this.saveFilters();
+
         this.fsp.refresh();
         this.updateContext();
         resetFilesExcludes().then(() => this.updateFilter());
@@ -124,7 +126,7 @@ export class FsManager {
 
     private async updateContext() {
         vscode.commands.executeCommand('setContext',
-            'lucid-workspace:fs.root.length', this.wsFolders.length);
+            'lucid-workspace:fs.root.length', this.wsFolders.size);
     }
 
     public addFilter(files:vscode.Uri[]) {
@@ -136,14 +138,14 @@ export class FsManager {
         this.updateFilter();
     }
 
-    public removeFilter(files:vscode.Uri[]) {
-        this.logger.info(`Remove filter for ${files.map(e => e.fsPath)}`);
-        let _match:string[] = files.map(e => e.fsPath);
-
-        /** Filter out paths */
-        let _filter = Array.from(this.filter.values());
-        _filter = _filter.filter(e => !_match.includes(e))
-        this.filter = new Set(_filter);
+    public removeFilter(files?:vscode.Uri[]) {
+        if (files) {
+            this.logger.info(`Remove filter for ${files.map(e => e.fsPath)}`);
+            for (const f of files) this.filter.delete(f.fsPath);
+        } else {
+            this.logger.info(`Remove all filters`);
+            this.filter.clear();
+        }
 
         this.saveFilters();
         this.fsp.refresh();
@@ -151,12 +153,12 @@ export class FsManager {
     }
 
     private async updateFilter() {
-        updateFileExcludes(this.wsFolders, Array.from(this.filter));
+        updateFileExcludes(Array.from(this.wsFolders), Array.from(this.filter));
     }
 
     private async saveFolders() {
         let config = vscode.workspace.getConfiguration('lucid-ws');
-        config.update('folders', this.wsFolders.map(e => e.fsPath));
+        config.update('folders', Array.from(this.wsFolders).map(e => e.fsPath));
     }
 
     private async saveFilters() {
@@ -168,7 +170,7 @@ export class FsManager {
         let config = vscode.workspace.getConfiguration('lucid-ws');
         let folders = config.get<string[]>('folders');
         if (folders) {
-            this.wsFolders = folders.map(e => vscode.Uri.file(e));
+            this.wsFolders = new Set(folders.map(e => vscode.Uri.file(e)));
         }
         let filters = config.get<string[]>('filters');
         if (filters) {

@@ -43,7 +43,8 @@ export class FsProvider implements vscode.TreeDataProvider<FsTreeItem> {
                     );
             }
         } else {
-            items = this.manager.wsFolders.map(e => new FsTreeItem(e));
+            items = Array.from(this.manager.wsFolders)
+                .map(e => new FsTreeItem(e));
         }
         return Promise.resolve(items);
     }
