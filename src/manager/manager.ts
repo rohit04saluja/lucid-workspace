@@ -1,4 +1,3 @@
-import AsyncLock = require('async-lock');
 import { basename, dirname, join } from 'path';
 import * as vscode from 'vscode';
 import { Logger, getLogger } from '../logger' 
@@ -11,17 +10,14 @@ import { resetFilesExcludes, updateFileExcludes } from '../config';
 export class FsManager {
     private logger: Logger = getLogger();
     private fsp:FsProvider = new FsProvider(this);
-    public wsFolders:vscode.Uri[] = [];
-    private lock = new AsyncLock();
-    public filter:string[] = [];
+    public wsFolder: vscode.Uri | undefined;
+    public filters: Set<string> = new Set();
 
     constructor(public context:vscode.ExtensionContext,) {
         this.logger.info('Initializing folder manager');
         this.loadState();
-        if (this.wsFolders.length > 0) {
-            this.updateContext();
-            this.updateFilter();
-        }
+        this.updateContext();
+        this.updateFilters();
 
         let _d:vscode.Disposable;
         _d = vscode.window.registerTreeDataProvider('fs', this.fsp);
@@ -34,7 +30,7 @@ export class FsManager {
             (file:FsTreeItem | undefined) => {
                 this.logger.info(`Add to active called with ${file}`);
                 if (file) {
-                    this.addFilter([file.resourceUri]);
+                    this.addFilters([file.resourceUri.fsPath]);
                 }
             }
         );
@@ -46,7 +42,7 @@ export class FsManager {
             (file:vscode.Uri | undefined) => {
                 this.logger.info(`Remove from active called with ${file}`);
                 if (file) {
-                    this.removeFilter([file]);
+                    this.removeFilters([file.fsPath]);
                 }
             }
         );
@@ -55,19 +51,67 @@ export class FsManager {
         /** Register add ws folders command */
         _d = vscode.commands.registerCommand(
             'lucid-workspace.add-ws-folders',
-            (folders:vscode.Uri[] | undefined) => {
-                this.logger.info(`Add ws folders called with ${folders}`);
-                if (folders == undefined || folders.length == 0) {
-                    wsFoldersQuickPick(
-                        undefined,
-                        this.wsFolders.map(e => e.fsPath)
-                    ).then(
-                        (value) => this.addWsFolders(value),
-                        () => this.logger.warn('No folders selected')
+            async (folder?:vscode.Uri, overwrite?: boolean) => {
+                if (this.wsFolder && (overwrite == undefined)) {
+                    const val = await vscode.window.showWarningMessage(
+                        `Are you sure you want to overwrite ${this.wsFolder}?`,
+                        { modal: true }, ...['Yes']
                     );
-                } else {
-                    this.addWsFolders(folders);
+                    if (val == 'Yes') overwrite = true;
+                    else return Promise.resolve();
+                } else overwrite = true;
+
+                if (
+                    (
+                        vscode.workspace.workspaceFolders &&
+                        (vscode.workspace.workspaceFolders.length > 0)
+                    ) && overwrite
+                ) {
+                    if (folder) {
+                        this.logger.info(`Add ${folder} to lucid`);
+                        /** Check if this folder exists in workspace folders */
+                        if (getWsFolder(folder.fsPath)) {
+                            this.addWsFolder(folder);
+                        } else {
+                            vscode.window.showErrorMessage(
+                                `${folder} is not a workspace folder. Open folder in vscode to add to Lucid`
+                            );
+                            return Promise.reject(
+                                `${folder} is not a workspace folder`
+                            );
+                        }
+                    } else {
+                        const item = vscode.workspace.workspaceFolders
+                            .map<vscode.QuickPickItem>(e => ({
+                                "label": basename(e.uri.fsPath),
+                                "description": dirname(e.uri.fsPath)
+                            }));
+                        if (item.length > 1) {
+                            const val = await vscode.window.showQuickPick(
+                                vscode.workspace.workspaceFolders
+                                    .map<vscode.QuickPickItem>(e => ({
+                                        "label": basename(e.uri.fsPath),
+                                        "description": dirname(e.uri.fsPath)
+                                    })), {
+                                        "placeHolder": "Select workspace folder"
+                                    }
+                            );
+                            if (val) {
+                                this.addWsFolder(vscode.Uri.parse(join(
+                                    val.description? val.description: '',
+                                    val.label
+                                )));
+                            }
+                        } else {
+                            this.addWsFolder(vscode.Uri.parse(join(
+                                item[0].description? item[0].description: '',
+                                item[0].label
+                            )));
+                        }
+                    }
+                    return Promise.resolve();
                 }
+                return Promise.reject();
             }
         );
         this.context.subscriptions.push(_d);
@@ -75,16 +119,9 @@ export class FsManager {
         /** Register remove ws folders command */
         _d = vscode.commands.registerCommand(
             'lucid-workspace.remove-ws-folders',
-            (folders:vscode.Uri[] | undefined) => {
-                this.logger.info(`Remove ws folderd called with ${folders}`);
-                if (folders == undefined || folders.length == 0) {
-                    wsFoldersQuickPick(this.wsFolders).then(
-                        (value) => this.removeWsFolders(value),
-                        () => this.logger.warn('No folders selected')
-                    );
-                } else {
-                    this.removeWsFolders(folders);
-                }
+            () => {
+                this.logger.info(`Remove ws folder called`);
+                this.removeWsFolder();
             }
         );
         this.context.subscriptions.push(_d);
@@ -92,163 +129,104 @@ export class FsManager {
 
     deactivate() {
         this.logger.info('FsManager is being deactived');
-        this.removeWsFolders(this.wsFolders);
+        this.removeWsFolder();
     }
 
-    public addWsFolders(folders:vscode.Uri[]) {
-        const _folders = folders.map(e => e.fsPath);
-        this.logger.info(`Add ${_folders.join(', ')} to FS manager`);
-        this.lock.acquire(
-            'wsFolders',
-            () => this.wsFolders = this.wsFolders.concat(folders)
-        ).then(() => {
-            this.saveFolders();
-            this.fsp.refresh();
-            this.updateContext();
-            this.updateFilter();
-        });
+    public addWsFolder(folder:vscode.Uri): Promise<void> {
+        this.logger.info(`Add ${folder} to FS manager`);
+        this.wsFolder = folder;
+        this.saveFolders();
+        this.fsp.refresh();
+        this.updateContext();
+        this.updateFilters();
+        return Promise.resolve();
     }
 
-    public removeWsFolders(folders:vscode.Uri[]) {
-        const _folders:string[] = folders.map(e => e.fsPath);
-        this.logger.info(`Remove ${_folders} from FS manager`);
-        this.lock.acquire('wsFolders', () =>
-            this.wsFolders = this.wsFolders.filter(
-                e => !_folders.includes(e.fsPath)
-            )
-        ).then(() => {
-            this.saveFolders();
-            this.lock.acquire('filter', () => {
-                for (const folder of _folders) {
-                    this.filter = this.filter.filter(
-                        e => !e.startsWith(folder)
-                    );
-                }
-            }).then(() => {
-                this.saveFilters();
-                this.fsp.refresh();
-                this.updateContext();
-                resetFilesExcludes().then(() => this.updateFilter());
-            });
-        });
+    public removeWsFolder() {
+        this.wsFolder = undefined;
+        this.saveFolders();
+
+        /** Filter out paths of removed folders */
+        this.filters.clear();
+        this.saveFilters();
+
+        this.fsp.refresh();
+        this.updateContext();
+        resetFilesExcludes();
     }
 
     private async updateContext() {
         vscode.commands.executeCommand('setContext',
-            'lucid-workspace:fs.root.length', this.wsFolders.length);
+            'lucid-workspace:fs.hasRoot', this.wsFolder? true: false);
     }
 
-    public addFilter(files:vscode.Uri[]) {
-        const _files:string[] = files.map(e => e.fsPath)
-        const _wsFolders:string[] = this.wsFolders.map(e => e.fsPath);
-        this.logger.info(`Add filter for ${_files}`);
-        this.lock.acquire('filter', () => {
-            for (let file of _files) {
-                if (!this.filter.includes(file)) {
-                    this.filter.push(file);
-                }
+    public addFilters(files: string[]) {
+        this.logger.info(`Add ${files} to active`);
+    
+        for (const file of files) this.filters.add(file);
+        this.saveFilters();
+
+        this.fsp.refresh();
+        this.updateFilters();
+    }
+
+    public removeFilters(files?: string[]) {
+        let _files: string[] = [];
+        if (files) {
+            this.logger.info(`Remove ${files} from active`);
+            for (const file of files) {
+                if (this.filters.has(file)) this.filters.delete(file);
+                else this.logger.warn(`${file} is not presenting in filters`);
             }
-        }).then(() => {
-            this.saveFilters();
-            this.fsp.refresh();
-            this.updateFilter();
-        });
+        } else {
+            this.logger.info(`Remove all filters`);
+            this.filters.clear();
+        }
+        this.saveFilters();
+
+        this.fsp.refresh();
+        if (!files) resetFilesExcludes();
+        else this.updateFilters();
     }
 
-    public removeFilter(files:vscode.Uri[]) {
-        this.logger.info(`Remove filter for ${files.map(e => e.fsPath)}`);
-        let _match:string[] = files.map(e => e.fsPath);
-        this.lock.acquire('filter', () =>
-            this.filter = this.filter.filter(e => !_match.includes(e))
-        ).then(() => {
-            this.saveFilters();
-            this.fsp.refresh();
-            this.updateFilter();
-        });
-    }
-
-    private async updateFilter() {
-        updateFileExcludes(this.wsFolders, this.filter);
+    private async updateFilters() {
+        if (this.wsFolder) {
+            updateFileExcludes(this.wsFolder, Array.from(this.filters));
+        }
     }
 
     private async saveFolders() {
-        let config = vscode.workspace.getConfiguration('lucid-ws');
-        config.update('folders', this.wsFolders.map(e => e.fsPath));
+        vscode.workspace.getConfiguration('lucid-ws').update(
+            'folder', this.wsFolder? this.wsFolder.fsPath: ''
+        );
     }
 
     private async saveFilters() {
-        let config = vscode.workspace.getConfiguration('lucid-ws');
-        config.update('filters', this.filter);
+        vscode.workspace.getConfiguration('lucid-ws')
+            .update('keep', Array.from(this.filters));
     }
 
     private async loadState() {
         let config = vscode.workspace.getConfiguration('lucid-ws');
-        let folders = config.get<string[]>('folders');
-        if (folders) {
-            this.wsFolders = folders.map(e => vscode.Uri.file(e));
-        }
+
+        let folder = config.get<string>('folder');
+        if (folder) this.wsFolder = vscode.Uri.file(folder);
+
         let filters = config.get<string[]>('filters');
-        if (filters) {
-            this.filter = filters;
-        }
+        if (filters) this.filters = new Set(filters);
     }
 }
 
-/**
- * @brief
- * wsFoldersQuickPick
- *
- * @param excludes 
- *
- * @return
- * Promises selected workspace folders 
- */
-export function wsFoldersQuickPick(
-    folders?:vscode.Uri[],
-    excludes?:string[]
-):Promise<vscode.Uri[]> {
-
-    if (!folders) {
-        folders = vscode.workspace.workspaceFolders?
-            [...vscode.workspace.workspaceFolders.map(e => e.uri)]:[];
-    }
-    let _filtered:vscode.Uri[] | undefined =
-        folders.filter(e => excludes?!excludes.includes(e.fsPath):true);
-    if (_filtered) {
-        if (_filtered.length > 1) {
-            return new Promise<vscode.Uri[]>((resolve, reject) => {
-                if (_filtered) {
-                    vscode.window.showQuickPick(_filtered
-                        .map<vscode.QuickPickItem>(e => 
-                            ({ "label": basename(e.fsPath), "description": dirname(e.fsPath) })
-                    ), {
-                        "canPickMany": true,
-                        "placeHolder": "Select workspace folders"
-                    }).then((value:vscode.QuickPickItem[] | undefined) => {
-                        if (value && folders) {
-                            resolve(value.map(
-                                e => vscode.Uri.parse(join(
-                                    e.description?e.description:'', e.label
-                                ))
-                            ));
-                        }
-                        reject();
-                    });
-                }
-            });
-        } else {
-            return Promise.resolve(_filtered);
-        }
-    }
-    return Promise.reject();
-}
-
-export function getWsFolderFromPath(
-    path:string
-):vscode.WorkspaceFolder | undefined {
+export function getWsFolder(
+    path: string, exact: boolean = true
+): vscode.WorkspaceFolder | undefined
+{
     if (vscode.workspace.workspaceFolders) {
         for (const f of vscode.workspace.workspaceFolders) {
-            if (path.startsWith(f.uri.fsPath)) {
+            if (
+                (exact && path.startsWith(f.uri.fsPath)) ||
+                (!exact && path == f.uri.fsPath)
+            ) {
                 return f;
             }
         }
