@@ -58,35 +58,35 @@
     "commands": [
       {
         "command": "lucid-workspace.add-to-active",
-        "enablement": "workspaceFolderCount > 0 && lucid-workspace:fs.root.length > 0",
+        "enablement": "workspaceFolderCount == 1 && lucid-workspace:fs.root.length > 0",
         "title": "Add to active view",
         "icon": "$(add)",
         "category": "Lucid Workspace"
       },
       {
         "command": "lucid-workspace.remove-from-active",
-        "enablement": "workspaceFolderCount > 0 && lucid-workspace:fs.root.length > 0",
+        "enablement": "workspaceFolderCount == 1 && lucid-workspace:fs.root.length > 0",
         "title": "Remove from active view",
         "icon": "$(remove)",
         "category": "Lucid Workspace"
       },
       {
         "command": "lucid-workspace.add-ws-folders",
-        "enablement": "workspaceFolderCount > 0",
+        "enablement": "workspaceFolderCount == 1",
         "title": "Add Workspace Folder",
         "icon": "$(add)",
         "category": "Lucid Workspace"
       },
       {
         "command": "lucid-workspace.remove-ws-folders",
-        "enablement": "workspaceFolderCount > 0",
+        "enablement": "workspaceFolderCount == 1",
         "title": "Remove Workspace Folder",
         "icon": "$(remove)",
         "category": "Lucid Workspace"
       },
       {
         "command": "lucid-workspace.refresh-fs",
-        "enablement": "workspaceFolderCount > 0 && lucid-workspace:fs.root.length > 0",
+        "enablement": "workspaceFolderCount == 1 && lucid-workspace:fs.root.length > 0",
         "title": "Refresh Tree View",
         "icon": "$(refresh)",
         "category": "Lucid Workspace"
@@ -98,7 +98,8 @@
           "id": "fs",
           "name": "Lucid Workspace",
           "type": "tree",
-          "icon": "_static/icon.svg"
+          "icon": "_static/icon.svg",
+          "when": "workspaceFolderCount == 1"
         }
       ]
     },
@@ -142,12 +143,12 @@
       "explorer/context": [
         {
           "command": "lucid-workspace.remove-from-active",
-          "when": "workspaceFolderCount > 0 && lucid-workspace:fs.root.length > 0",
+          "when": "workspaceFolderCount == 1 && lucid-workspace:fs.root.length > 0",
           "group": "lucid-workspace"
         },
         {
           "command": "lucid-workspace.add-ws-folders",
-          "when": "workspaceFolderCount > 0 && viewItem == ",
+          "when": "workspaceFolderCount == 1 && viewItem == ",
           "group": "lucid-workspace"
         }
       ]
