@@ -174,7 +174,10 @@ export class FsManager {
         let _files: string[] = [];
         if (files) {
             this.logger.info(`Remove ${files} from active`);
-            for (const file of files) this.filters.delete(file);
+            for (const file of files) {
+                if (this.filters.has(file)) this.filters.delete(file);
+                else this.logger.warn(`${file} is not presenting in filters`);
+            }
         } else {
             this.logger.info(`Remove all filters`);
             this.filters.clear();
