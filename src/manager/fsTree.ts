@@ -1,9 +1,8 @@
-import AsyncLock = require('async-lock');
 import { lstatSync, readdirSync, realpathSync } from 'fs';
 import { join } from 'path';
 import * as vscode from 'vscode';
 import { getLogger, Logger } from '../logger';
-import { FsManager, getWsFolderFromPath } from './manager';
+import { FsManager } from './manager';
 
 /**
  * Class for FsProvider
@@ -15,7 +14,6 @@ export class FsProvider implements vscode.TreeDataProvider<FsTreeItem> {
         this._onDidChangeTreeData.event;
 
     private logger:Logger = getLogger();
-    private lock = new AsyncLock();
 
     constructor(private readonly manager: FsManager) {
         this.logger.info('Initializing fs tree provider');
