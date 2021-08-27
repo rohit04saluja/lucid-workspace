@@ -1,5 +1,7 @@
 # 🗂 Lucid-workspace
 
+[![VS Code Marketplace](https://vsmarketplacebadge.apphb.com/version-short/rohit04saluja.lucid-workspace.svg) ![Rating](https://vsmarketplacebadge.apphb.com/rating-short/rohit04saluja.lucid-workspace.svg) ![Installs](https://vsmarketplacebadge.apphb.com/installs/rohit04saluja.lucid-workspace.svg)](https://marketplace.visualstudio.com/items?itemName=rohit04saluja.lucid-workspace)
+
 > An extension to seemlessly manage large workspaces
 
 ## 🖋 Inspiration
