@@ -2,7 +2,7 @@
   "name": "lucid-workspace",
   "displayName": "Lucid Workspace",
   "description": "An extension to manage large workspaces",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "homepage": "https://github.com/rohit04saluja/lucid-workspace",
   "repository": {
     "type": "git",
@@ -171,8 +171,11 @@
     "@typescript-eslint/parser": "^4.29.2",
     "eslint": "^7.32.0",
     "glob": "^7.1.7",
-    "mocha": "^8.4.0",
+    "mocha": "^10.0.0",
     "typescript": "^4.3.5",
     "vscode-test": "^1.6.1"
+  },
+  "dependencies": {
+    "all": "^0.0.0"
   }
 }
