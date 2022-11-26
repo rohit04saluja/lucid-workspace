@@ -2,7 +2,7 @@
   "name": "lucid-workspace",
   "displayName": "Lucid Workspace",
   "description": "An extension to manage large workspaces",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "homepage": "https://github.com/rohit04saluja/lucid-workspace",
   "repository": {
     "type": "git",
