@@ -94,7 +94,7 @@
     "views": {
       "explorer": [
         {
-          "id": "fs",
+          "id": "lucid-fs",
           "name": "Lucid Workspace",
           "type": "tree",
           "icon": "_static/icon.svg",
@@ -104,7 +104,7 @@
     },
     "viewsWelcome": [
       {
-        "view": "fs",
+        "view": "lucid-fs",
         "contents": "Add workspace folders to start managing them better.\n[Add Folder](command:lucid-workspace.add-ws-folders)",
         "enablement": "lucid-workspace:state == active"
       }
@@ -114,30 +114,29 @@
         {
           "command": "lucid-workspace.add-ws-folders",
           "title": "Add",
-          "when": "lucid-workspace:fs.hasRoot == true",
+          "when": "view == lucid-fs && lucid-workspace:fs.hasRoot == true",
           "group": "navigation"
         },
         {
           "command": "lucid-workspace.remove-ws-folders",
           "title": "Remove",
-          "when": "lucid-workspace:fs.hasRoot == true",
+          "when": "view == lucid-fs && lucid-workspace:fs.hasRoot == true",
           "group": "navigation"
         },
         {
           "command": "lucid-workspace.refresh-fs",
           "title": "Refresh",
-          "when": "lucid-workspace:fs.hasRoot == true",
-          "group": "navigation"
+          "when": "view == lucid-fs && lucid-workspace:fs.hasRoot == true",
         }
       ],
       "view/item/context": [
         {
           "command": "lucid-workspace.add-to-active",
-          "when": "view == fs"
+          "when": "view == lucid-fs"
         },
         {
           "command": "lucid-workspace.refresh-fs",
-          "when": "view == fs"
+          "when": "view == lucid-fs"
         }
       ],
       "explorer/context": [

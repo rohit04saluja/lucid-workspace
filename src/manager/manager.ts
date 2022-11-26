@@ -20,7 +20,7 @@ export class FsManager {
         this.updateFilters();
 
         let _d:vscode.Disposable;
-        _d = vscode.window.registerTreeDataProvider('fs', this.fsp);
+        _d = vscode.window.registerTreeDataProvider('lucid-fs', this.fsp);
         this.context.subscriptions.push(_d);
 
         /** Register the commands */
