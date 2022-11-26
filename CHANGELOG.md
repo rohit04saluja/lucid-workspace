@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+### Added
+
+- Adding togglehide command and button to _hide_/_unhide_ files and folders in the explorer
+
 ## [1.1.2] - 2022/11/25
 
 ### Fixed
