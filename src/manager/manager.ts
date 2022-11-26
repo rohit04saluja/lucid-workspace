@@ -12,6 +12,7 @@ export class FsManager {
     private fsp:FsProvider = new FsProvider(this);
     public wsFolder: vscode.Uri | undefined;
     public filters: Set<string> = new Set();
+    private _hide = true;
 
     constructor(public context:vscode.ExtensionContext,) {
         this.logger.info('Initializing folder manager');
@@ -125,6 +126,17 @@ export class FsManager {
             }
         );
         this.context.subscriptions.push(_d);
+
+        /** Register a togglehide command */
+        _d = vscode.commands.registerCommand(
+            'lucid-workspace.togglehide',
+            () => {
+                this._hide = !this._hide;
+                this.logger.info(`${this._hide? "H": "Unh"}ide workspace`);
+                this.updateFilters();
+            }
+        );
+        this.context.subscriptions.push(_d);
     }
 
     deactivate() {
@@ -191,7 +203,9 @@ export class FsManager {
 
     private async updateFilters() {
         if (this.wsFolder) {
-            updateFileExcludes(this.wsFolder, Array.from(this.filters));
+            updateFileExcludes(
+                this.wsFolder, Array.from(this.filters), this._hide
+            );
         }
     }
 
