@@ -6,6 +6,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [1.1.2] - 2022/11/25
+
+### Fixed
+
+- Fixing mechanism to save filters in workspace settings
+
 ## [1.1.1] - 2022/07/25
 
 ### Changed
