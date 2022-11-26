@@ -202,8 +202,9 @@ export class FsManager {
     }
 
     private async saveFilters() {
-        vscode.workspace.getConfiguration('lucid-ws')
-            .update('keep', Array.from(this.filters));
+        vscode.workspace.getConfiguration('lucid-ws').update(
+            'filters', Array.from(this.filters)
+        );
     }
 
     private async loadState() {
