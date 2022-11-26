@@ -89,6 +89,12 @@
         "title": "Refresh Tree View",
         "icon": "$(refresh)",
         "category": "Lucid Workspace"
+      },
+      {
+        "command": "lucid-workspace.togglehide",
+        "enablement": "lucid-workspace:fs.hasRoot == true && lucid-workspace:numFilters > 0",
+        "title": "Toggle explorer hide",
+        "category": "Lucid Workspace"
       }
     ],
     "views": {
@@ -127,6 +133,12 @@
           "command": "lucid-workspace.refresh-fs",
           "title": "Refresh",
           "when": "view == lucid-fs && lucid-workspace:fs.hasRoot == true",
+        },
+        {
+          "command": "lucid-workspace.togglehide",
+          "title:": "Toggle hide",
+          "when": "view == lucid-fs && lucid-workspace:numFilters > 0",
+          "group": "@1"
         }
       ],
       "view/item/context": [
