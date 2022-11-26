@@ -91,6 +91,8 @@ When active, _lucid-workspace_ can be found at ```Explorer```.
 
 5. `Refresh Tree View`: Refresh the tree view of _Lucid Workspace_
 
+6. `Toggle Explorer Hide`: Toggle _hide_/_unhide_ view of explorer with filters of _Lucid Workspace_
+
 ---
 
 ## 📝 Release Notes
