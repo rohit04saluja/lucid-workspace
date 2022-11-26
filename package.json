@@ -133,6 +133,7 @@
           "command": "lucid-workspace.refresh-fs",
           "title": "Refresh",
           "when": "view == lucid-fs && lucid-workspace:fs.hasRoot == true",
+          "group": "@1"
         },
         {
           "command": "lucid-workspace.togglehide",
